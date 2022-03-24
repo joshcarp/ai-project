@@ -1,3 +1,3 @@
 
 def testsquare():
-   assert 7*7 == 49
+    assert 7*7 == 49
