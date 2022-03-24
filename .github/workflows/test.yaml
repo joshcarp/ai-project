@@ -1,0 +1,21 @@
+name: PR checker - python
+on:
+  pull_request:
+  push:
+
+jobs:
+  test:
+    runs-on: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.6
+      - name: Install deps
+        run: |
+          pip install pytest flake8 wheel
+          pip install -r "requirements.txt"
+      - name: test
+        run: pytest
+      - name: flake8
+        run: flake8
