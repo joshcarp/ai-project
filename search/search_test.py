@@ -1,8 +1,8 @@
-from search import *
+import search
 
 
 def testsquare():
-    a: Input = Input("""{
+    a: search.Input = search.Input("""{
   "n": 5,
   "board": [
       ["b", 1, 0],
@@ -16,5 +16,5 @@ def testsquare():
 """)
     print(a)
 
-    b: Board = Board(a.n)
+    b: search.Board = search.Board(a.n)
     print(b)
