@@ -2,32 +2,31 @@ import json
 from typing import List
 
 
-class Color:
-    name: str
-
-
-class Hexagon:
-    pass
-
-
 class Hexagon:
     coords: (int, int)
-    color: Color
-    neighbours: List[Hexagon]
+    color: str
 
-    def __init__(self, i, j):
+    def __init__(self, i: int, j: int):
         self.coords = (i, j)
 
     def __repr__(self):
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True,
-                          indent=4)
+        return f"{self.coords} {self.color}"
 
     def __add__(self, other):
         return Hexagon(self.coords[0] + other.coords[0],
                        self.coords[1] + other.coords[1])
 
 
-def direction_vectors():
+def neighbours(self: Hexagon, n: int) -> {(int, int)}:
+    return {(self + a).coords for a in direction_vectors() if
+            valid((self + a).coords, n)}
+
+
+def valid(a: (int, int), n: int) -> bool:
+    return a[0] in range(0, n) and a[1] in range(0, n)
+
+
+def direction_vectors() -> List[Hexagon]:
     return [Hexagon(+1, 0), Hexagon(+1, -1), Hexagon(0, -1),
             Hexagon(-1, 0), Hexagon(-1, +1), Hexagon(0, +1)]
 
@@ -44,8 +43,7 @@ class Board:
                 self.pieces[i].append(new_piece)
 
     def __repr__(self):
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True,
-                          indent=4)
+        return f"{self.pieces}"
 
 
 class Input:
