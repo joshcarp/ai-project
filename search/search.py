@@ -30,22 +30,6 @@ def direction_vectors() -> List[Hexagon]:
     return [Hexagon(+1, 0), Hexagon(+1, -1), Hexagon(0, -1),
             Hexagon(-1, 0), Hexagon(-1, +1), Hexagon(0, +1)]
 
-
-class Board:
-    pieces: List[List[Hexagon]]
-
-    def __init__(self, n: int):
-        self.pieces = []
-        for i in range(n):
-            self.pieces.append([])
-            for j in range(n):
-                new_piece = Hexagon(i, j)
-                self.pieces[i].append(new_piece)
-
-    def __repr__(self):
-        return f"{self.pieces}"
-
-
 class Input:
     n: int
     board: List
@@ -55,3 +39,35 @@ class Input:
     def __init__(self, string):
         data = json.loads(string)
         self.__dict__ = data
+
+class Board:
+    pieces: List[List[Hexagon]]
+    start: Hexagon
+    goal: Hexagon
+    taken: {Hexagon}
+    n: int
+
+    def __init__(self, input: Input):
+        self.n = input.n
+        self.pieces = []
+
+        for i in range(input.n):
+            self.pieces.append([])
+            for j in range(input.n):
+                new_piece = Hexagon(i, j)
+                self.pieces[i].append(new_piece)
+        self.start = self.piece(input.start[0], input.start[1])
+        self.goal = self.piece(input.goal[0], input.goal[1])
+
+        for elem in input.board:
+            self.piece(elem[1], elem[2]).color = elem[0]
+
+    def __repr__(self):
+        return f"{self.pieces}"
+
+    def piece(self, x: int, y: int) -> Hexagon:
+        return self.pieces[x][y]
+
+    def color(self, loc: (str, int, int)):
+        self.pieces[loc[1]][loc[2]].color = loc[0]
+

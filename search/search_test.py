@@ -16,7 +16,7 @@ def testsquare():
 """)
     print(a)
 
-    b: search.Board = search.Board(a.n)
+    b: search.Board = search.Board(a)
     print(b)
     print(b.pieces[3][2])
     print(search.direction_vectors()[0] + b.pieces[3][2])
