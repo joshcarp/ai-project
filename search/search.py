@@ -8,6 +8,7 @@ class Hexagon:
 
     def __init__(self, i: int, j: int):
         self.coords = (i, j)
+        self.color = ""
 
     def __repr__(self):
         return f"{self.coords} {self.color}"
@@ -30,6 +31,7 @@ def direction_vectors() -> List[Hexagon]:
     return [Hexagon(+1, 0), Hexagon(+1, -1), Hexagon(0, -1),
             Hexagon(-1, 0), Hexagon(-1, +1), Hexagon(0, +1)]
 
+
 class Input:
     n: int
     board: List
@@ -39,6 +41,7 @@ class Input:
     def __init__(self, string):
         data = json.loads(string)
         self.__dict__ = data
+
 
 class Board:
     pieces: List[List[Hexagon]]
@@ -70,4 +73,3 @@ class Board:
 
     def color(self, loc: (str, int, int)):
         self.pieces[loc[1]][loc[2]].color = loc[0]
-
