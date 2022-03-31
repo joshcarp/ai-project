@@ -8,7 +8,7 @@ def testdistance():
 
 
 def testsquare():
-    a: search.Input = search.Input("""{
+    rawinput: search.Input = search.Input("""{
   "n": 5,
   "board": [
       ["b", 1, 0],
@@ -21,10 +21,22 @@ def testsquare():
   "goal": [0, 0]
   }
 """)
-    b: search.Board = search.Board(a)
-    solution = b.a_star()
-    for elem in solution:
-        print(elem)
+    expected = """8
+(4,2)
+(4,1)
+(3,1)
+(2,1)
+(1,2)
+(0,2)
+(0,1)
+(0,0)"""
+    board: search.Board = search.Board(rawinput)
+    solution = board.a_star()
+    output = search.format_output(solution)
+
+    assert output == expected
+
+
 
 
 # def testneighbours():

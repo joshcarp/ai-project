@@ -1,9 +1,8 @@
 import json
 import typing
+from math import inf
 from typing import List
-import math
 from typing import Union
-
 
 
 class Hexagon:
@@ -21,19 +20,19 @@ class Hexagon:
         self.coords = (i, j)
         self.color = ""
         self.piece_value = 1
-        self.path_cost = math.inf
+        self.path_cost: Union[int, float] = inf
         self.previous: Hexagon = None
 
     def __repr__(self):
-        return f"{self.coords} {self.color}"
+        return f"({self.coords[0]},{self.coords[1]})"
 
-    def distance(self, other):
+    def distance(self, other) -> int:
         return (abs(self.coords[0] - other.coords[0])
                 + abs(self.coords[0] + self.coords[1] - other.coords[0] -
                       other.coords[1])
                 + abs(self.coords[1] - other.coords[1])) / 2
 
-    def get_path(self):
+    def get_path(self) -> List[Hexagon]:
         elems: List[Hexagon] = []
         current = self
         while current is not None:
@@ -41,6 +40,10 @@ class Hexagon:
             current = current.previous
         elems.reverse()
         return elems
+
+    def set_color(self, color: str):
+        self.color = color
+        self.piece_value = inf
 
     def __add__(self, other):
         return Hexagon(self.coords[0] + other.coords[0],
@@ -78,7 +81,7 @@ class Board:
     taken: {Hexagon}
     n: int
 
-    def __init__(self, input: Input):
+    def __init__(self, input: Union[Input, None]):
         if input is None:
             return
         self.n = input.n
@@ -109,40 +112,44 @@ class Board:
         return self.pieces[x[0]][x[1]]
 
     def color(self, loc: (str, int, int)):
-        self.pieces[loc[1]][loc[2]].color = loc[0]
-        self.pieces[loc[1]][loc[2]].piece_value = math.inf
+        self.pieces[loc[1]][loc[2]].set_color(loc[0])
 
+    def neighbours(self, piece: Hexagon) -> [Hexagon]:
+        return [self.piece_tuple((piece + a).coords) for a in
+                direction_vectors()
+                if
+                valid((piece + a).coords, self.n)
+                and
+                self.piece((piece + a).coords[0],
+                           (piece + a).coords[1]).color == ""
+                ]
 
-    def a_star(self):
+    def a_star(self) -> List[Hexagon]:
         current: Hexagon = self.start
         closed_nodes: typing.List[Hexagon] = []
-        open: typing.List[Hexagon] = [current]
+        open_nodes: typing.List[Hexagon] = [current]
         current.path_cost = 0
         while current.coords != self.goal.coords:
-            open.sort(
+            open_nodes.sort(
                 key=lambda x: x.distance(self.goal) + x.path_cost,
                 reverse=True
             )
-            current = open.pop()
+            current = open_nodes.pop()
             closed_nodes.append(current)
-            for elem in neighbours(current, self):
+            for elem in self.neighbours(current):
                 current_path_cost = current.path_cost + 1
                 if elem.path_cost < current_path_cost and elem in closed_nodes:
                     current.path_cost = elem.path_cost + 1
                     current.previous = elem
-                elif elem.path_cost < current_path_cost and elem in open:
+                elif elem.path_cost < current_path_cost and elem in open_nodes:
                     elem.path_cost = current_path_cost + 1
                     elem.previous = current
-                if elem not in closed_nodes and elem not in open:
+                if elem not in closed_nodes and elem not in open_nodes:
                     elem.path_cost = current_path_cost
-                    open.append(elem)
+                    open_nodes.append(elem)
         return current.get_path()
 
 
-def neighbours(self: Hexagon, board: Board) -> [Hexagon]:
-    return [board.piece_tuple((self + a).coords) for a in direction_vectors()
-            if
-            valid((self + a).coords, board.n)
-            and
-            board.piece((self + a).coords[0], (self + a).coords[1]).color == ""
-            ]
+def format_output(path: List[Hexagon]) -> str:
+    pathstr = "\n".join([x.__str__() for x in path])
+    return f"{len(path)}\n{pathstr}"
