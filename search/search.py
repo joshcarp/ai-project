@@ -1,9 +1,7 @@
 import json
-import sys
-import typing
+from sys import argv
 from math import inf
-from typing import List
-from typing import Union
+from typing import List, Union
 
 
 class Hexagon:
@@ -123,8 +121,8 @@ class Board:
 
     def a_star(self) -> List[Hexagon]:
         current: Hexagon = self.start
-        closed_nodes: typing.List[Hexagon] = []
-        open_nodes: typing.List[Hexagon] = [current]
+        closed_nodes: List[Hexagon] = []
+        open_nodes: List[Hexagon] = [current]
         current.path_cost = 0
         while current.coords != self.goal.coords:
             open_nodes.sort(
@@ -160,9 +158,9 @@ def main(jsonstr: str) -> str:
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
+    if len(argv) != 2:
         print("must supply json file argument")
         exit(1)
-    file = open(sys.argv[1], "r")
+    file = open(argv[1], "r")
     jsonstr = file.read()
     print(main(jsonstr))
