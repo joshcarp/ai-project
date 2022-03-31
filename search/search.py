@@ -73,7 +73,6 @@ class Board:
     pieces: List[List[Hexagon]]
     start: Hexagon
     goal: Hexagon
-    taken: {Hexagon}
     n: int
 
     def __init__(self, input: Union[Input, None]):
@@ -90,7 +89,7 @@ class Board:
         self.goal = self.piece(input.goal[0], input.goal[1])
 
         for elem in input.board:
-            self.piece(elem[1], elem[2]).color = elem[0]
+            self.piece(elem[1], elem[2]).set_color(elem[0])
 
     def copy(self):
         a: Board = Board(None)
@@ -106,9 +105,6 @@ class Board:
     def piece_tuple(self, x: (int, int)) -> Hexagon:
         return self.pieces[x[0]][x[1]]
 
-    def color(self, loc: (str, int, int)):
-        self.pieces[loc[1]][loc[2]].set_color(loc[0])
-
     def neighbours(self, piece: Hexagon) -> [Hexagon]:
         return [self.piece_tuple((piece + a).coords) for a in
                 direction_vectors()
@@ -120,7 +116,7 @@ class Board:
                 ]
 
     def a_star(self) -> List[Hexagon]:
-        current: Hexagon = self.start
+        current = self.start
         closed_nodes: List[Hexagon] = []
         open_nodes: List[Hexagon] = [current]
         current.path_cost = 0
@@ -131,17 +127,17 @@ class Board:
             )
             current = open_nodes.pop()
             closed_nodes.append(current)
-            for elem in self.neighbours(current):
-                current_path_cost = current.path_cost + elem.piece_value
-                if elem.path_cost < current_path_cost and elem in closed_nodes:
-                    current.path_cost = elem.path_cost + elem.piece_value
-                    current.previous = elem
-                elif elem.path_cost < current_path_cost and elem in open_nodes:
-                    elem.path_cost = current_path_cost + elem.piece_value
-                    elem.previous = current
-                if elem not in closed_nodes and elem not in open_nodes:
-                    elem.path_cost = current_path_cost
-                    open_nodes.append(elem)
+            for neighbour in self.neighbours(current):
+                neighbour_path_cost = current.path_cost + neighbour.piece_value
+                if neighbour.path_cost < neighbour_path_cost and neighbour in closed_nodes:
+                    current.path_cost = neighbour.path_cost + current.piece_value
+                    current.previous = neighbour
+                elif neighbour.path_cost < neighbour_path_cost and neighbour in open_nodes:
+                    neighbour.path_cost = neighbour_path_cost + current.piece_value
+                    neighbour.previous = current
+                if neighbour not in closed_nodes and neighbour not in open_nodes:
+                    neighbour.path_cost = neighbour_path_cost
+                    open_nodes.append(neighbour)
         return current.get_path()
 
 
