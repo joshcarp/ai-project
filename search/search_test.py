@@ -37,8 +37,6 @@ def testsquare():
     assert output == expected
 
 
-
-
 # def testneighbours():
 #     board: search.Board = search.Board(None)
 #     board.n = 5

@@ -21,7 +21,7 @@ class Hexagon:
         self.color = ""
         self.piece_value = 1
         self.path_cost: Union[int, float] = inf
-        self.previous: Hexagon = None
+        self.previous: Union[Hexagon, None] = None
 
     def __repr__(self):
         return f"({self.coords[0]},{self.coords[1]})"
@@ -50,10 +50,6 @@ class Hexagon:
                        self.coords[1] + other.coords[1])
 
 
-# function axial_distance(a, b):
-#     return (abs(a.q - b.q)
-#           + abs(a.q + a.r - b.q - b.r)
-#           + abs(a.r - b.r)) / 2
 def valid(a: (int, int), n: int) -> bool:
     return a[0] in range(0, n) and a[1] in range(0, n)
 
@@ -137,12 +133,12 @@ class Board:
             current = open_nodes.pop()
             closed_nodes.append(current)
             for elem in self.neighbours(current):
-                current_path_cost = current.path_cost + 1
+                current_path_cost = current.path_cost + elem.piece_value
                 if elem.path_cost < current_path_cost and elem in closed_nodes:
-                    current.path_cost = elem.path_cost + 1
+                    current.path_cost = elem.path_cost + elem.piece_value
                     current.previous = elem
                 elif elem.path_cost < current_path_cost and elem in open_nodes:
-                    elem.path_cost = current_path_cost + 1
+                    elem.path_cost = current_path_cost + elem.piece_value
                     elem.previous = current
                 if elem not in closed_nodes and elem not in open_nodes:
                     elem.path_cost = current_path_cost
