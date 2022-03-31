@@ -16,15 +16,26 @@ class Hexagon:
         self.coords = (i, j)
         self.color = ""
         self.path_cost = 10000000000
+        self.previous: Hexagon = None
 
     def __repr__(self):
         return f"{self.coords} {self.color}"
+
+    def distance(self, other):
+        return (abs(self.coords[0] - other.coords[0])
+                + abs(self.coords[0] + self.coords[1] - other.coords[0] -
+                      other.coords[1])
+                + abs(self.coords[1] - other.coords[1])) / 2
 
     def __add__(self, other):
         return Hexagon(self.coords[0] + other.coords[0],
                        self.coords[1] + other.coords[1])
 
 
+# function axial_distance(a, b):
+#     return (abs(a.q - b.q)
+#           + abs(a.q + a.r - b.q - b.r)
+#           + abs(a.r - b.r)) / 2
 def valid(a: (int, int), n: int) -> bool:
     return a[0] in range(0, n) and a[1] in range(0, n)
 
@@ -89,4 +100,7 @@ class Board:
 def neighbours(self: Hexagon, board: Board) -> [Hexagon]:
     return [board.piece_tuple((self + a).coords) for a in direction_vectors()
             if
-            valid((self + a).coords, board.n)]
+            valid((self + a).coords, board.n)
+            and
+            board.piece((self + a).coords[0], (self + a).coords[1]).color == ""
+            ]

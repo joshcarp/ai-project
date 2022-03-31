@@ -3,6 +3,12 @@ import typing
 import search
 
 
+def testdistance():
+    a = search.Hexagon(0, 0)
+    b = search.Hexagon(4, 4)
+    print(a.distance(b))
+
+
 def testsquare():
     a: search.Input = search.Input("""{
   "n": 5,
@@ -24,19 +30,28 @@ def testsquare():
     print(search.direction_vectors()[0] + b.pieces[3][2])
     end = find_end(b)
     print(end)
+    print(a)
+
+    print("Path:\n\n")
+    while end is not None:
+        print(end.coords)
+        end = end.previous
 
 
 def find_end(b: search.Board):
-    current = b.start
+    current: search.Hexagon = b.start
     closed: typing.List[search.Hexagon] = []
-    open: typing.List[search.Hexagon] = []
+    open: typing.List[search.Hexagon] = [current]
     current.path_cost = 0
     while current.coords != b.goal.coords:
+        open.sort(key=lambda x: x.distance(b.goal))
+        current = open.pop()
         closed.append(current)
         for elem in search.neighbours(current, b):
             current_path_cost = current.path_cost + 1
             if elem.path_cost < current.path_cost:
                 if elem in closed:
+                    current.previous = elem
                     continue
                 elif elem in open:
                     elem.path_cost = current_path_cost
@@ -71,5 +86,6 @@ def find_end(b: search.Board):
 #
 #     for elem in tests:
 #         coord = elem["coord"]
-#         neighbours = search.neighbours(search.Hexagon(coord[0], coord[1]), board)
+#         neighbours = search.neighbours(
+#         search.Hexagon(coord[0], coord[1]), board)
 #         assert elem["neighbours"] == neighbours
