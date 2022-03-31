@@ -1,6 +1,6 @@
 import json
-from sys import argv
 from math import inf
+from sys import argv
 from typing import List, Union
 
 
@@ -117,27 +117,27 @@ class Board:
 
     def a_star(self) -> List[Hexagon]:
         current = self.start
-        closed_nodes: List[Hexagon] = []
-        open_nodes: List[Hexagon] = [current]
+        closed: List[Hexagon] = []
+        opened: List[Hexagon] = [current]
         current.path_cost = 0
         while current.coords != self.goal.coords:
-            open_nodes.sort(
+            opened.sort(
                 key=lambda x: x.distance(self.goal) + x.path_cost,
                 reverse=True
             )
-            current = open_nodes.pop()
-            closed_nodes.append(current)
-            for neighbour in self.neighbours(current):
-                neighbour_path_cost = current.path_cost + neighbour.piece_value
-                if neighbour.path_cost < neighbour_path_cost and neighbour in closed_nodes:
-                    current.path_cost = neighbour.path_cost + current.piece_value
-                    current.previous = neighbour
-                elif neighbour.path_cost < neighbour_path_cost and neighbour in open_nodes:
-                    neighbour.path_cost = neighbour_path_cost + current.piece_value
-                    neighbour.previous = current
-                if neighbour not in closed_nodes and neighbour not in open_nodes:
-                    neighbour.path_cost = neighbour_path_cost
-                    open_nodes.append(neighbour)
+            current = opened.pop()
+            closed.append(current)
+            for neigh in self.neighbours(current):
+                neighbour_path_cost = current.path_cost + neigh.piece_value
+                if neigh.path_cost < neighbour_path_cost and neigh in closed:
+                    current.path_cost = neigh.path_cost + current.piece_value
+                    current.previous = neigh
+                elif neigh.path_cost > neighbour_path_cost and neigh in opened:
+                    neigh.path_cost = neighbour_path_cost + neigh.piece_value
+                    neigh.previous = current
+                if neigh not in closed and neigh not in opened:
+                    neigh.path_cost = neighbour_path_cost
+                    opened.append(neigh)
         return current.get_path()
 
 
