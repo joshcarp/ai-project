@@ -1,4 +1,6 @@
 import json
+import os
+import sys
 import typing
 from math import inf
 from typing import List
@@ -149,3 +151,19 @@ class Board:
 def format_output(path: List[Hexagon]) -> str:
     pathstr = "\n".join([x.__str__() for x in path])
     return f"{len(path)}\n{pathstr}"
+
+
+def main(jsonstr: str) -> str:
+    raw_input: Input = Input(jsonstr)
+    board: Board = Board(raw_input)
+    solution = board.a_star()
+    return format_output(solution)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("must supply json file argument")
+        exit(1)
+    file = open(sys.argv[1], "r")
+    jsonstr = file.read()
+    print(main(jsonstr))
