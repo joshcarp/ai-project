@@ -1,4 +1,5 @@
 import json
+import typing
 from typing import List
 
 
@@ -26,6 +27,15 @@ class Hexagon:
                 + abs(self.coords[0] + self.coords[1] - other.coords[0] -
                       other.coords[1])
                 + abs(self.coords[1] - other.coords[1])) / 2
+
+    def get_path(self):
+        elems: List[Hexagon] = []
+        current = self
+        while current is not None:
+            elems.append(current)
+            current = current.previous
+        elems.reverse()
+        return elems
 
     def __add__(self, other):
         return Hexagon(self.coords[0] + other.coords[0],
@@ -95,6 +105,31 @@ class Board:
 
     def color(self, loc: (str, int, int)):
         self.pieces[loc[1]][loc[2]].color = loc[0]
+
+    def a_star(self):
+        current: Hexagon = self.start
+        closed: typing.List[Hexagon] = []
+        open: typing.List[Hexagon] = [current]
+        current.path_cost = 0
+        while current.coords != self.goal.coords:
+            open.sort(
+                key=lambda x: x.distance(self.goal) + x.path_cost,
+                reverse=True
+            )
+            current = open.pop()
+            closed.append(current)
+            for elem in neighbours(current, self):
+                current_path_cost = current.path_cost + 1
+                if elem.path_cost < current_path_cost and elem in closed:
+                    current.path_cost = elem.path_cost + 1
+                    current.previous = elem
+                elif elem.path_cost < current_path_cost and elem in open:
+                    elem.path_cost = current_path_cost + 1
+                    elem.previous = current
+                if elem not in closed and elem not in open:
+                    elem.path_cost = current_path_cost
+                    open.append(elem)
+        return current.get_path()
 
 
 def neighbours(self: Hexagon, board: Board) -> [Hexagon]:

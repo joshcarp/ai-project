@@ -1,5 +1,3 @@
-import typing
-
 import search
 
 
@@ -17,50 +15,17 @@ def testsquare():
       ["b", 1, 1],
       ["b", 1, 3],
       ["b", 3, 2]
+
   ],
   "start": [4, 2],
   "goal": [0, 0]
   }
 """)
-    print(a)
-
     b: search.Board = search.Board(a)
-    print(b)
-    print(b.pieces[3][2])
-    print(search.direction_vectors()[0] + b.pieces[3][2])
-    end = find_end(b)
-    print(end)
-    print(a)
+    solution = b.a_star()
+    for elem in solution:
+        print(elem)
 
-    print("Path:\n\n")
-    while end is not None:
-        print(end.coords)
-        end = end.previous
-
-
-def find_end(b: search.Board):
-    current: search.Hexagon = b.start
-    closed: typing.List[search.Hexagon] = []
-    open: typing.List[search.Hexagon] = [current]
-    current.path_cost = 0
-    while current.coords != b.goal.coords:
-        open.sort(key=lambda x: x.distance(b.goal))
-        current = open.pop()
-        closed.append(current)
-        for elem in search.neighbours(current, b):
-            current_path_cost = current.path_cost + 1
-            if elem.path_cost < current.path_cost:
-                if elem in closed:
-                    current.previous = elem
-                    continue
-                elif elem in open:
-                    elem.path_cost = current_path_cost
-                    current = elem
-                    elem.previous = current
-            if elem not in closed and elem not in open:
-                elem.path_cost = current_path_cost
-                open.append(elem)
-    return current
 
 # def testneighbours():
 #     board: search.Board = search.Board(None)
