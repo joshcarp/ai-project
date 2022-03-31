@@ -1,6 +1,9 @@
 import json
 import typing
 from typing import List
+import math
+from typing import Union
+
 
 
 class Hexagon:
@@ -11,12 +14,14 @@ class Hexagon:
     coords: (int, int)
     color: str
     previous: Hexagon
-    path_cost: int
+    path_cost: Union[int, float]
+    piece_value: int
 
     def __init__(self, i: int, j: int):
         self.coords = (i, j)
         self.color = ""
-        self.path_cost = 10000000000
+        self.piece_value = 1
+        self.path_cost = math.inf
         self.previous: Hexagon = None
 
     def __repr__(self):
@@ -105,10 +110,12 @@ class Board:
 
     def color(self, loc: (str, int, int)):
         self.pieces[loc[1]][loc[2]].color = loc[0]
+        self.pieces[loc[1]][loc[2]].piece_value = math.inf
+
 
     def a_star(self):
         current: Hexagon = self.start
-        closed: typing.List[Hexagon] = []
+        closed_nodes: typing.List[Hexagon] = []
         open: typing.List[Hexagon] = [current]
         current.path_cost = 0
         while current.coords != self.goal.coords:
@@ -117,16 +124,16 @@ class Board:
                 reverse=True
             )
             current = open.pop()
-            closed.append(current)
+            closed_nodes.append(current)
             for elem in neighbours(current, self):
                 current_path_cost = current.path_cost + 1
-                if elem.path_cost < current_path_cost and elem in closed:
+                if elem.path_cost < current_path_cost and elem in closed_nodes:
                     current.path_cost = elem.path_cost + 1
                     current.previous = elem
                 elif elem.path_cost < current_path_cost and elem in open:
                     elem.path_cost = current_path_cost + 1
                     elem.previous = current
-                if elem not in closed and elem not in open:
+                if elem not in closed_nodes and elem not in open:
                     elem.path_cost = current_path_cost
                     open.append(elem)
         return current.get_path()
