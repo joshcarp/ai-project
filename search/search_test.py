@@ -1,12 +1,6 @@
 import search
 
 
-def testdistance():
-    a = search.Hexagon(0, 0)
-    b = search.Hexagon(4, 4)
-    print(a.distance(b))
-
-
 def testsquare():
     rawinput: search.Input = search.Input("""{
   "n": 5,
@@ -33,7 +27,6 @@ def testsquare():
     board: search.Board = search.Board(rawinput)
     solution = board.a_star()
     output = search.format_output(solution)
-
     assert output == expected
 
 
