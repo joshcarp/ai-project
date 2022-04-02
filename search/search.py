@@ -9,18 +9,16 @@ class Hexagon:
 
 
 class Hexagon:
-    coords: (int, int)
-    color: str
-    previous: Hexagon
-    path_cost: Union[int, float]
-    piece_value: int
+    coords: (int, int) = (-1, -1)
+    color: str = ""
+    previous: Union[Hexagon, None] = None
+    path_cost: Union[int, float] = 0
+    piece_value: Union[int, float] = 0
 
     def __init__(self, i: int, j: int):
         self.coords = (i, j)
-        self.color = ""
         self.piece_value = 1
         self.path_cost: Union[int, float] = inf
-        self.previous: Union[Hexagon, None] = None
 
     def __repr__(self):
         return f"({self.coords[0]},{self.coords[1]})"
@@ -59,10 +57,10 @@ def direction_vectors() -> List[Hexagon]:
 
 
 class Input:
-    n: int
-    board: List
-    start: List[int]
-    goal: List[int]
+    n: int = 0
+    board: List = []
+    start: List[int] = []
+    goal: List[int] = []
 
     def __init__(self, string):
         data = json.loads(string)
@@ -76,18 +74,19 @@ class Board:
     n: int
 
     def __init__(self, input: Union[Input, None]):
+        self.pieces = []
         if input is None:
             return
         self.n = input.n
-        self.pieces = []
         for i in range(input.n):
             self.pieces.append([])
             for j in range(input.n):
                 new_piece = Hexagon(i, j)
                 self.pieces[i].append(new_piece)
-        self.start = self.piece(input.start[0], input.start[1])
-        self.goal = self.piece(input.goal[0], input.goal[1])
-
+        if len(input.start) >= 2:
+            self.start = self.piece(input.start[0], input.start[1])
+        if len(input.goal) >= 2:
+            self.goal = self.piece(input.goal[0], input.goal[1])
         for elem in input.board:
             self.piece(elem[1], elem[2]).set_color(elem[0])
 

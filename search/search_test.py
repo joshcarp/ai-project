@@ -37,30 +37,30 @@ def testsquare():
     assert output == expected
 
 
-# def testneighbours():
-#     board: search.Board = search.Board(None)
-#     board.n = 5
-#     tests = [
-#         {
-#             "coord": (0, 0),
-#             "neighbours": {(1, 0), (0, 1)}
-#         },
-#         {
-#             "coord": (0, 1),
-#             "neighbours": {(0, 0), (1, 0), (1, 1), (0, 2)}
-#         },
-#         {
-#             "coord": (2, 2),
-#             "neighbours": {(2, 1), (1, 2), (1, 3), (2, 3), (3, 2), (3, 1)}
-#         },
-#         {
-#             "coord": (4, 4),
-#             "neighbours": {(4, 3), (3, 4)}
-#         },
-#     ]
-#
-#     for elem in tests:
-#         coord = elem["coord"]
-#         neighbours = search.neighbours(
-#         search.Hexagon(coord[0], coord[1]), board)
-#         assert elem["neighbours"] == neighbours
+def testneighbours():
+    input = search.Input("{}")
+    input.n = 5
+    board: search.Board = search.Board(input)
+    tests = [
+        {
+            "coord": (0, 0),
+            "neighbours": {(1, 0), (0, 1)}
+        },
+        {
+            "coord": (0, 1),
+            "neighbours": {(0, 0), (1, 0), (1, 1), (0, 2)}
+        },
+        {
+            "coord": (2, 2),
+            "neighbours": {(2, 1), (1, 2), (1, 3), (2, 3), (3, 2), (3, 1)}
+        },
+        {
+            "coord": (4, 4),
+            "neighbours": {(4, 3), (3, 4)}
+        },
+    ]
+
+    for elem in tests:
+        coord = elem["coord"]
+        neighbours = board.neighbours(search.Hexagon(coord[0], coord[1]))
+        assert elem["neighbours"] == {e.coords for e in neighbours}
