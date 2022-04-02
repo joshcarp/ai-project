@@ -47,10 +47,6 @@ class Hexagon:
                        self.coords[1] + other.coords[1])
 
 
-def valid(a: (int, int), n: int) -> bool:
-    return a[0] in range(0, n) and a[1] in range(0, n)
-
-
 def direction_vectors() -> List[Hexagon]:
     return [Hexagon(+1, 0), Hexagon(+1, -1), Hexagon(0, -1),
             Hexagon(-1, 0), Hexagon(-1, +1), Hexagon(0, +1)]
@@ -104,15 +100,16 @@ class Board:
     def piece_tuple(self, x: (int, int)) -> Hexagon:
         return self.pieces[x[0]][x[1]]
 
+    def valid(self, piece: Hexagon) -> bool:
+        return piece.coords[0] in range(0, self.n) and piece.coords[
+            1] in range(0, self.n)
+
     def neighbours(self, piece: Hexagon) -> [Hexagon]:
         return [self.piece_tuple((piece + a).coords) for a in
                 direction_vectors()
-                if
-                valid((piece + a).coords, self.n)
-                and
-                self.piece((piece + a).coords[0],
-                           (piece + a).coords[1]).color == ""
-                ]
+                if self.valid(piece + a)
+                and self.piece((piece + a).coords[0],
+                               (piece + a).coords[1]).color == ""]
 
     def a_star(self) -> List[Hexagon]:
         current = self.start
