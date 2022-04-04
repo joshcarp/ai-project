@@ -30,6 +30,28 @@ def testsquare():
     assert output == expected
 
 
+def testsquare2():
+    rawinput: search.Input = search.Input(
+        """{"n":5,"board":[["b",1,0],["b",1,1],["b",1,3],["b",3,2],["b",3,3],
+        ["b",1,2],["b",2,0],["b",3,0],["b",4,0]],"start":[4,2],
+        "goal":[0,0]}""")
+    expected = """10
+(4,2)
+(4,3)
+(3,4)
+(2,4)
+(1,4)
+(0,4)
+(0,3)
+(0,2)
+(0,1)
+(0,0)"""
+    board: search.Board = search.Board(rawinput)
+    solution = board.a_star()
+    output = search.format_output(solution)
+    assert output == expected
+
+
 def testneighbours():
     input = search.Input("{}")
     input.n = 5

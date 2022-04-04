@@ -181,7 +181,7 @@ class Board:
                     current.total_cost = neigh.total_cost + current.incr_cost
                     current.previous = neigh
                 elif neigh.total_cost > neigh_path_cost and neigh in opened:
-                    neigh.total_cost = neigh_path_cost + neigh.incr_cost
+                    neigh.total_cost = neigh_path_cost
                     neigh.previous = current
                 if neigh not in closed and neigh not in opened:
                     neigh.total_cost = neigh_path_cost
