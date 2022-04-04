@@ -173,19 +173,32 @@ class Board:
                 key=lambda x: x.distance(self.goal) + x.total_cost,
                 reverse=True
             )
+            if len(opened) == 0:
+                return []
             current = opened.pop()
             closed.append(current)
             for neigh in self.neighbours(current):
+                # neigh_path_cost is the cost to get to the neighbour
+                # from the current node
                 neigh_path_cost = current.total_cost + neigh.incr_cost
+                # if the neighbours already existing cost is less than
+                # the current node then the current nodes previous
+                # becomes the neighbour
                 if neigh.total_cost < neigh_path_cost and neigh in closed:
                     current.total_cost = neigh.total_cost + current.incr_cost
                     current.previous = neigh
+                # if the neighbours total existing cost is more than getting
+                # to the neighbour through the current node then set
+                # neighbours previous to the current node
                 elif neigh.total_cost > neigh_path_cost and neigh in opened:
                     neigh.total_cost = neigh_path_cost
                     neigh.previous = current
+                # if neighbour is not in open then we will add it to be
+                # expanded next iteration
                 if neigh not in closed and neigh not in opened:
                     neigh.total_cost = neigh_path_cost
                     opened.append(neigh)
+
         return current.get_path()
 
 
