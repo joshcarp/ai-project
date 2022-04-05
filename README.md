@@ -40,6 +40,12 @@ The way we calculated that was with the adaptation of the algorithm from https:/
 The heuristic is admissible as it assumes positive weights for paths and the heuristic is weighted to move towards the goal.
 Because this distance between the current node and the end node is __always__ the shortest path, when we sort our queue we are guaranteed to start exploring the nodes that have the shortest paths. If the expansion cannot be explored to the end node (for example there are pieces blocking the way) then the updated path cost will mean that we explore other shorter estimated nodes. When we get to the finish node it is guaranteed to be the shortest path because there are no other possible paths that are less than the one we just took. This heuristic will need to be modified to be permissible in the case of already colored pieces, but this it not to be answered here.
 
+The formula for the heuristic is h(s) <= cost(s,a) + futurecost(s\`) where h is the heuristic, s is the current state, a is the action and s\` is the next state.
+The heuristic function that was used is also consistent as the estimate distance is always <= to the actual path used. Hence the heuristic that was used can be said to be admissible. 
+
+![image](https://user-images.githubusercontent.com/84863427/161736557-70d7cde5-32b0-4e5a-83fa-5b66a8765359.png)
+
+
 The cost of computing the heuristic function is O(nlogn) as we sort the list every time we go through the while loop, although because we are appending 6 neighbours per loop there are only 6 elements that would need to be sorted on each iteration. This means that the actual time complexity would be at most 6 * 1 as calculating distance between two hexagons is a constant operation. 
 
 ---
