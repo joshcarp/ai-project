@@ -1,4 +1,9 @@
-# project 1 written answers
+# project 1
+### Running the code
+```
+python search.py <filename.json>
+```
+
 ---
 #### 1. How did you implement the A* search? Discuss implementation details, including choice of relevant data structures, and analyse the time/space complexity of your solution.
 
