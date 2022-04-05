@@ -36,7 +36,7 @@ class Hexagon:
     def __repr__(self):
         return f"({self.coords[0]},{self.coords[1]})"
 
-    def distance(self, other) -> int:
+    def distance(self, othr) -> int:
         """
         distance returns the amount of places from the current hexagon to
         another hexagon.
@@ -44,10 +44,11 @@ class Hexagon:
         https://www.redblobgames.com/grids/hexagons/#distances
         Copyright © 2022 Red Blob Games.
         """
-        return (abs(self.coords[0] - other.coords[0])
-                + abs(self.coords[0] + self.coords[1] - other.coords[0] -
-                      other.coords[1])
-                + abs(self.coords[1] - other.coords[1])) / 2
+        x = self.coords[0] - othr.coords[0]
+        xy = (self.coords[0] + self.coords[1]) - \
+             (othr.coords[0] + othr.coords[1])
+        y = self.coords[1] - othr.coords[1]
+        return (abs(x) + abs(xy) + abs(y)) / 2
 
     def get_path(self) -> List[Hexagon]:
         """
@@ -64,7 +65,8 @@ class Hexagon:
 
     def set_color(self, color: str):
         """
-        set_color sets the current Hexagon's color to the input string
+        set_color sets the current Hexagon's color to the input string and
+        sets the incremental cost to infinity
         """
         self.color = color
         self.incr_cost = inf
@@ -198,7 +200,8 @@ class Board:
                 if neigh not in closed and neigh not in opened:
                     neigh.total_cost = neigh_path_cost
                     opened.append(neigh)
-
+        # current at this point is goal, so traverse back to start and return
+        # the list
         return current.get_path()
 
 
