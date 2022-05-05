@@ -49,12 +49,11 @@ class Player:
             prev = self.plays[-2]
             self.board.piece(prev.r, prev.q).set_color(action.player)
         if action.type == "PLACE":
+            capture(self.board, action)
             self.board.piece(action.r, action.q).set_color(action.player)
-            # TODO: process capture here
 
 
-def capture(b: Board, player, action: Action) -> Board:
-    action = Action(player, *action)
+def capture(b: Board, action: Action):
     coords = (action.r, action.q)
     filter1 = lambda x: x.color != action.player and x.color != ""
     filter2 = lambda x: x.color == action.player and x.color != ""

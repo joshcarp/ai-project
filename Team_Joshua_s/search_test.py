@@ -167,9 +167,16 @@ def testplayer():
     player.turn("blue", ("PLACE", 1, 1))
     player.turn("red", ("PLACE", 0, 1))
     util.print_board(*player.board.dict())
-    b = capture(player.board, "red", ("PLACE", 2, 0))
-    util.print_board(*b.dict())
-    # player.turn("red", ("PLACE", 2, 0))
+    player.turn("red", ("PLACE", 2, 0))
+    util.print_board(*player.board.dict())
+    assert player.board.piece(0, 1).color == "red"
+    assert player.board.piece(2, 0).color == "red"
+    assert player.board.piece(1, 0).color == ""
+    assert player.board.piece(1, 1).color == ""
+    player.turn("blue", ("PLACE", 1, 0))
+    player.turn("blue", ("PLACE", 1, 1))
+    assert player.board.piece(0, 1).color == ""
+    assert player.board.piece(2, 0).color == ""
     util.print_board(*player.board.dict())
 
 
