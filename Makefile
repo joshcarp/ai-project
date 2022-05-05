@@ -1,6 +1,6 @@
 all:
-	autopep8 --in-place --recursive .
-	flake8
+	#autopep8 --in-place --recursive .
+	#flake8
 	pytest
 
 pdf:

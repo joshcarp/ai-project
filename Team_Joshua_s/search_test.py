@@ -1,4 +1,6 @@
-import search
+import Team_Joshua_s.search as search
+import Team_Joshua_s.util as util
+from Team_Joshua_s.player import *
 
 
 def testsquare():
@@ -152,3 +154,24 @@ def bfs(self: search.Board):
             queue.append(neig)
             visited.add(neig)
     return self.goal.get_path()
+
+
+def testplayer():
+    player = Player("red", 4)
+    player.turn("red", ("PLACE", 1, 0))
+    util.print_board(*player.board.dict())
+    assert player.board.piece(1, 0).color == "red"
+    player.turn("blue", ("STEAL",))
+    assert player.board.piece(1, 0).color == "blue"
+    util.print_board(*player.board.dict())
+    player.turn("blue", ("PLACE", 1, 1))
+    player.turn("red", ("PLACE", 0, 1))
+    util.print_board(*player.board.dict())
+    b = capture(player.board, "red", ("PLACE", 2, 0))
+    util.print_board(*b.dict())
+    # player.turn("red", ("PLACE", 2, 0))
+    util.print_board(*player.board.dict())
+
+
+def testfoo():
+    pass

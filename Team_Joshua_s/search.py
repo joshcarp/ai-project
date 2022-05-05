@@ -1,11 +1,15 @@
 import json
+from collections import namedtuple
 from math import inf
 from sys import argv
-from typing import List, Union
+from typing import List, Union, Callable
 
 
 class Hexagon:
     pass
+
+
+Coordinate = namedtuple('Coord', 'x y')
 
 
 class Hexagon:
@@ -95,7 +99,9 @@ class Input:
     start: List[int] = []
     goal: List[int] = []
 
-    def __init__(self, string):
+    def __init__(self, string: Union[str, None] = None):
+        if string is None:
+            return
         data = json.loads(string)
         self.__dict__ = data
 
@@ -130,6 +136,14 @@ class Board:
     def __repr__(self):
         return f"{self.pieces}"
 
+    def dict(self) -> (int, {}):
+        d: {} = {}
+        for list in self.pieces:
+            for e in list:
+                if e.color != "":
+                    d[e.coords] = e.color
+        return self.n, d
+
     def piece(self, x: int, y: int) -> Hexagon:
         """
         piece returns the Hexagon at coordinates (x, y)
@@ -148,9 +162,11 @@ class Board:
         and False otherwise.
         """
         return piece.coords[0] in range(0, self.n) and \
-            piece.coords[1] in range(0, self.n)
+               piece.coords[1] in range(0, self.n)
 
-    def neighbours(self, piece: Hexagon) -> [Hexagon]:
+    def neighbours(self, piece: Hexagon,
+                   filter: Callable[[Hexagon], bool] = lambda x: x.color == "") \
+            -> [Hexagon]:
         """
         neighbours returns a list of Hexagons that exist within the board
         that don't already have a color.
@@ -158,7 +174,7 @@ class Board:
         return [self.piece_tuple((piece + a).coords) for a in
                 direction_vectors() if
                 self.valid(piece + a) and
-                self.piece_tuple((piece + a).coords).color == ""]
+                filter(self.piece_tuple((piece + a).coords))]
 
     def a_star(self) -> List[Hexagon]:
         """
@@ -203,7 +219,6 @@ class Board:
         # current at this point is goal, so traverse back to start and return
         # the list
         return current.get_path()
-
 
 def format_output(path: List[Hexagon]) -> str:
     """
