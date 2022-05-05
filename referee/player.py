@@ -215,7 +215,7 @@ def set_space_line():
     try:
         _DEFAULT_MEM_USAGE, _ = _get_space_usage()
         _SPACE_ENABLED = True
-    except:
+    except BaseException:
         # this also gives us a chance to detect if our space-measuring method
         # will work on this platform, and notify the user if not.
         print(

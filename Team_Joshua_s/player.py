@@ -1,12 +1,14 @@
-from Team_Joshua_s.search import *
+from collections import namedtuple
+import Team_Joshua_s.search as search
 
 Action = namedtuple('Action', 'player type r q')
 Action.__new__.__defaults__ = (None,) * len(Action._fields)
 
+
 class Player:
     player: str = ""
-    board: Board = None
-    plays: List[Action] = []
+    board: search.Board = None
+    plays: search.List[Action] = []
 
     def __init__(self, player: str, n: int):
         """
@@ -17,9 +19,9 @@ class Player:
         play as Red, or the string "blue" if your player will play
         as Blue.
         """
-        inp: Input = Input()
+        inp: search.Input = search.Input()
         inp.n = n
-        self.board = Board(inp)
+        self.board = search.Board(inp)
         self.color = player
 
     def action(self):
@@ -40,7 +42,7 @@ class Player:
         the same as what your player returned from the action method
         above. However, the referee has validated it at this point.
         """
-        if type(action) == str:
+        if isinstance(action, str):
             action = (action,)
         action = Action(player, *action)
         self.plays.append(action)
@@ -52,12 +54,12 @@ class Player:
             self.board.piece(action.r, action.q).set_color(action.player)
 
 
-def capture(b: Board, action: Action):
+def capture(b: search.Board, action: Action):
     coords = (action.r, action.q)
-    filter1 = lambda x: x.color != action.player and x.color != ""
-    filter2 = lambda x: x.color == action.player and x.color != ""
+    def filter1(x): return x.color != action.player and x.color != ""
+    def filter2(x): return x.color == action.player and x.color != ""
     neighs = b.neighbours(b.piece(*coords), filter=filter1)
-    seen: {Hexagon: Hexagon} = {}
+    seen: {search.Hexagon: search.Hexagon} = {}
     for elem in neighs:
         if elem.color == action.player or elem.color == "":
             continue

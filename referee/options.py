@@ -105,7 +105,7 @@ The first argument is the size of the game board to play on (3 <= n <= 15).
 The next two arguments are 'package specifications'. These specify which
 Python package/module to import and search for a class named 'Player' (to
 instantiate for each player in the game). When we test your programs this
-will just be your top-level package (i.e. 'your_team_name'). 
+will just be your top-level package (i.e. 'your_team_name').
 
 If you want to play games with another player class from another package
 (e.g. while you develop your player), you can use any absolute module name

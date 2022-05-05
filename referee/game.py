@@ -139,11 +139,11 @@ def play(
 #
 
 _PLAYER_AXIS = {
-    "red": 0, # Red aims to form path in r/0 axis
-    "blue": 1 # Blue aims to form path in q/1 axis
+    "red": 0,  # Red aims to form path in r/0 axis
+    "blue": 1  # Blue aims to form path in q/1 axis
 }
 
-_PLAYER_TURN_ORDER = ["red", "blue"] # Red always goes first
+_PLAYER_TURN_ORDER = ["red", "blue"]  # Red always goes first
 
 # Actions
 _ACTION_STEAL = "STEAL"
@@ -151,13 +151,13 @@ _ACTION_PLACE = "PLACE"
 
 # Action type validators
 _ACTION_TYPES = set([
-    (_ACTION_STEAL, ), 
+    (_ACTION_STEAL, ),
     (_ACTION_PLACE, int, int)
 ])
 
 # Draw conditions
 _MAX_REPEAT_STATES = 7
-_MAX_TURNS = 343  
+_MAX_TURNS = 343
 
 
 class IllegalActionException(Exception):
@@ -205,7 +205,7 @@ class Game:
         Otherwise, apply the action to the game state.
         """
         # Throw an error if it is not this player's turn
-        # Note: this should not occur in practice since the referee handles 
+        # Note: this should not occur in practice since the referee handles
         # turn taking between each player
         if player != self._turn_player():
             raise self._illegal_action(action, f"It is not {player}'s turn!")
@@ -218,9 +218,8 @@ class Game:
         atype, *aargs = action
         action_type = (atype, *(type(arg) for arg in aargs))
         if not isinstance(atype, str) or action_type not in _ACTION_TYPES:
-            self._illegal_action(action,
-                f"Action does not exist or is not well formed."
-            )
+            self._illegal_action(
+                action, f"Action does not exist or is not well formed.")
 
         # Validate/apply action based on type
         if atype == _ACTION_STEAL:
@@ -243,13 +242,13 @@ class Game:
 
         # End turn and check for game end conditions
         self._turn_detect_end(player, action)
-        
+
         # Log the action (if logging is enabled)
         self.logger.info(
             f"turn {self.nturns}: {player}: {_FORMAT_ACTION(action)}"
         )
 
-        return (atype, *aargs) # action is sanitised at this point
+        return (atype, *aargs)  # action is sanitised at this point
 
     def _validate_steal(self, action):
         """
@@ -257,11 +256,10 @@ class Game:
         """
         # STEAL action is only allowed for blue's first move
         if self.nturns != 1:
-            self._illegal_action(action,
-                "The STEAL action is not currently permitted. This "
+            self._illegal_action(
+                action, "The STEAL action is not currently permitted. This "
                 "action may only be played by the blue player on their "
-                "*first* move of the game."
-            )
+                "*first* move of the game.")
 
     def _validate_place(self, action):
         """
@@ -271,24 +269,22 @@ class Game:
 
         # Cannot place outside board bounds
         if not self.board.inside_bounds((r, q)):
-            self._illegal_action(action,
-                f"The PLACE action coordinate {(r, q)} is outside "
-                f"the bounds of the board (n = {self.board.n}). "
-            )
+            self._illegal_action(
+                action, f"The PLACE action coordinate {(r, q)} is outside "
+                f"the bounds of the board (n = {self.board.n}). ")
 
         # Cannot place token in center of the board on the first move
         if self.nturns == 0 and r * 2 == q * 2 == self.board.n - 1:
-            self._illegal_action(action,
-                "The PLACE action is not permitted in the center cell of "
-                "the board on the first move of the game. "
-            )
+            self._illegal_action(
+                action, "The PLACE action is not permitted in the center cell of "
+                "the board on the first move of the game. ")
 
         # Cannot place on top of an existing board token
         if self.board.is_occupied((r, q)):
-            self._illegal_action(action,
+            self._illegal_action(
+                action,
                 f"The PLACE action coordinate {(r, q)} is already "
-                "occupied. "
-            )
+                "occupied. ")
 
     def _illegal_action(self, action, message):
         """
@@ -361,7 +357,7 @@ class Game:
             self.logger.info(self.result)
             self.close()
         return self.result
-    
+
     def close(self):
         if self.handler is not None:
             self.handler.close()
@@ -376,8 +372,15 @@ class Game:
 _RED_SYM = 'r'
 _BLUE_SYM = 'b'
 _CAPTURE_SYM = 'X'
-_POINT_TO = lambda s: f">{s}<"
-_STAR_TO = lambda s: f"*{s}*"
+
+
+def _POINT_TO(s):
+    return f">{s}<"
+
+
+def _STAR_TO(s):
+    return f"*{s}*"
+
 
 def _RENDER(
     game,
@@ -462,7 +465,7 @@ def _RENDER(
         # Note that j is equivalent to q in axial coordinates
         for j in range(board.n):
             coord = (board.n - i - 1, j)
-            color = value = "" if board[coord] == None else \
+            color = value = "" if board[coord] is None else \
                 (_RED_SYM if board[coord] == "red" else _BLUE_SYM)
             if use_debugboard:
                 if coord == game.last_coord:
@@ -476,14 +479,14 @@ def _RENDER(
             output += contents + (v_divider if j < board.n - 1 else "")
         output += apply_ansi(v_divider, color="b")
         output += "\n"
-    
+
     # Final/lower stitching (note use of offset here)
     stitch_length = (board.n * h_spacing) + int(h_spacing / 2)
     lower_stitching = stitching(int(h_spacing / 2) - 1, stitch_length)
     output += apply_ansi(lower_stitching, color="r") + "\n"
 
     return output
-        
+
 
 def _FORMAT_ACTION(action):
     atype, *aargs = action

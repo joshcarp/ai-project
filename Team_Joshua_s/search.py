@@ -162,11 +162,10 @@ class Board:
         and False otherwise.
         """
         return piece.coords[0] in range(0, self.n) and \
-               piece.coords[1] in range(0, self.n)
+            piece.coords[1] in range(0, self.n)
 
-    def neighbours(self, piece: Hexagon,
-                   filter: Callable[[Hexagon], bool] = lambda x: x.color == "") \
-            -> [Hexagon]:
+    def neighbours(self, piece: Hexagon, filter: Callable[[
+                   Hexagon], bool] = lambda x: x.color == "") -> [Hexagon]:
         """
         neighbours returns a list of Hexagons that exist within the board
         that don't already have a color.
@@ -219,6 +218,7 @@ class Board:
         # current at this point is goal, so traverse back to start and return
         # the list
         return current.get_path()
+
 
 def format_output(path: List[Hexagon]) -> str:
     """

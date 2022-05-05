@@ -7,3 +7,4 @@ exclude =
     dist,
     vendor,
     .venv,
+    referee,

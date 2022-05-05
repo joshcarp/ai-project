@@ -1,6 +1,6 @@
 import Team_Joshua_s.search as search
 import Team_Joshua_s.util as util
-from Team_Joshua_s.player import *
+import Team_Joshua_s.player as player
 
 
 def testsquare():
@@ -157,27 +157,27 @@ def bfs(self: search.Board):
 
 
 def testplayer():
-    player = Player("red", 4)
-    player.turn("red", ("PLACE", 1, 0))
-    util.print_board(*player.board.dict())
-    assert player.board.piece(1, 0).color == "red"
-    player.turn("blue", ("STEAL",))
-    assert player.board.piece(1, 0).color == "blue"
-    util.print_board(*player.board.dict())
-    player.turn("blue", ("PLACE", 1, 1))
-    player.turn("red", ("PLACE", 0, 1))
-    util.print_board(*player.board.dict())
-    player.turn("red", ("PLACE", 2, 0))
-    util.print_board(*player.board.dict())
-    assert player.board.piece(0, 1).color == "red"
-    assert player.board.piece(2, 0).color == "red"
-    assert player.board.piece(1, 0).color == ""
-    assert player.board.piece(1, 1).color == ""
-    player.turn("blue", ("PLACE", 1, 0))
-    player.turn("blue", ("PLACE", 1, 1))
-    assert player.board.piece(0, 1).color == ""
-    assert player.board.piece(2, 0).color == ""
-    util.print_board(*player.board.dict())
+    pl = player.Player("red", 4)
+    pl.turn("red", ("PLACE", 1, 0))
+    util.print_board(*pl.board.dict())
+    assert pl.board.piece(1, 0).color == "red"
+    pl.turn("blue", ("STEAL",))
+    assert pl.board.piece(1, 0).color == "blue"
+    util.print_board(*pl.board.dict())
+    pl.turn("blue", ("PLACE", 1, 1))
+    pl.turn("red", ("PLACE", 0, 1))
+    util.print_board(*pl.board.dict())
+    pl.turn("red", ("PLACE", 2, 0))
+    util.print_board(*pl.board.dict())
+    assert pl.board.piece(0, 1).color == "red"
+    assert pl.board.piece(2, 0).color == "red"
+    assert pl.board.piece(1, 0).color == ""
+    assert pl.board.piece(1, 1).color == ""
+    pl.turn("blue", ("PLACE", 1, 0))
+    pl.turn("blue", ("PLACE", 1, 1))
+    assert pl.board.piece(0, 1).color == ""
+    assert pl.board.piece(2, 0).color == ""
+    util.print_board(*pl.board.dict())
 
 
 def testfoo():
