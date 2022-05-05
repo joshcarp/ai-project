@@ -1,5 +1,4 @@
 import json
-from collections import namedtuple
 from math import inf
 from sys import argv
 from typing import List, Union, Callable
@@ -7,9 +6,6 @@ from typing import List, Union, Callable
 
 class Hexagon:
     pass
-
-
-Coordinate = namedtuple('Coord', 'x y')
 
 
 class Hexagon:
@@ -144,6 +140,10 @@ class Board:
                     d[e.coords] = e.color
         return self.n, d
 
+    def filter_pieces(self,
+                      filter: Callable[[Hexagon], bool] = lambda x: True):
+        return [e for sub in self.pieces for e in sub if filter(e)]
+
     def piece(self, x: int, y: int) -> Hexagon:
         """
         piece returns the Hexagon at coordinates (x, y)
@@ -165,7 +165,8 @@ class Board:
             piece.coords[1] in range(0, self.n)
 
     def neighbours(self, piece: Hexagon, filter: Callable[[
-                   Hexagon], bool] = lambda x: x.color == "") -> [Hexagon]:
+            Hexagon], bool] = lambda
+            x: x.color == "") -> [Hexagon]:
         """
         neighbours returns a list of Hexagons that exist within the board
         that don't already have a color.

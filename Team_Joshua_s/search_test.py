@@ -173,10 +173,24 @@ def testplayer():
     assert pl.board.piece(2, 0).color == "red"
     assert pl.board.piece(1, 0).color == ""
     assert pl.board.piece(1, 1).color == ""
+    assert player.evaluate(pl.board, "red") == 2
     pl.turn("blue", ("PLACE", 1, 0))
     pl.turn("blue", ("PLACE", 1, 1))
     assert pl.board.piece(0, 1).color == ""
     assert pl.board.piece(2, 0).color == ""
+    util.print_board(*pl.board.dict())
+    assert player.evaluate(pl.board, "red") == -2
+
+
+def testplayer2():
+    pl = player.Player("red", 4)
+    pl.turn("blue", ("PLACE", 1, 0))
+    pl.turn("blue", ("PLACE", 1, 1))
+    pl.turn("red", ("PLACE", 0, 1))
+    util.print_board(*pl.board.dict())
+    act = pl.action()
+    print(act)
+    pl.turn(act.player, (act.type, act.r, act.q))
     util.print_board(*pl.board.dict())
 
 

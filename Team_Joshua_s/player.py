@@ -1,4 +1,6 @@
 from collections import namedtuple
+from copy import deepcopy
+
 import Team_Joshua_s.search as search
 
 Action = namedtuple('Action', 'player type r q')
@@ -22,14 +24,14 @@ class Player:
         inp: search.Input = search.Input()
         inp.n = n
         self.board = search.Board(inp)
-        self.color = player
+        self.player = player
 
     def action(self):
         """
        Called at the beginning of your turn. Based on the current state
        of the game, select an action to play.
        """
-        pass
+        return action(self.player, self.plays, self.board)
 
     def turn(self, player, action):
         """
@@ -45,19 +47,40 @@ class Player:
         if isinstance(action, str):
             action = (action,)
         action = Action(player, *action)
-        self.plays.append(action)
-        if action.type == "STEAL":
-            prev = self.plays[-2]
-            self.board.piece(prev.r, prev.q).set_color(action.player)
-        if action.type == "PLACE":
-            capture(self.board, action)
-            self.board.piece(action.r, action.q).set_color(action.player)
+        turn(self.plays, self.board, action)
+
+
+def action(player: str, plays: [], board: search.Board):
+    first_moves = []
+    for pieces in board.filter_pieces(lambda x: x.color == ""):
+        boardcpy = deepcopy(board)
+        playscpy = deepcopy(plays)
+        action = Action(player, "PLACE", *pieces.coords)
+        turn(playscpy, boardcpy, action)
+        first_moves.append(
+            (boardcpy, playscpy, action, evaluate(boardcpy, player)))
+    return max(first_moves, key=lambda x: x[3])[2]
+
+
+def turn(plays: [], board: search.Board, action: Action):
+    plays.append(action)
+    if action.type == "STEAL":
+        prev = plays[-2]
+        board.piece(prev.r, prev.q).set_color(action.player)
+    if action.type == "PLACE":
+        capture(board, action)
+        board.piece(action.r, action.q).set_color(action.player)
 
 
 def capture(b: search.Board, action: Action):
     coords = (action.r, action.q)
-    def filter1(x): return x.color != action.player and x.color != ""
-    def filter2(x): return x.color == action.player and x.color != ""
+
+    def filter1(x):
+        return x.color != action.player and x.color != ""
+
+    def filter2(x):
+        return x.color == action.player and x.color != ""
+
     neighs = b.neighbours(b.piece(*coords), filter=filter1)
     seen: {search.Hexagon: search.Hexagon} = {}
     for elem in neighs:
@@ -74,3 +97,10 @@ def capture(b: search.Board, action: Action):
                 return b
             seen[elem2] = elem
     return
+
+
+def evaluate(board: search.Board, color: str) -> int:
+    return len(
+        [e for sub in board.pieces for e in sub if e.color == color]) - len(
+        [e for sub in board.pieces for e in sub if
+         e.color != color and e.color != ""])
