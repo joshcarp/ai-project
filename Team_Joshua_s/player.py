@@ -1,8 +1,7 @@
 from Team_Joshua_s.search import *
 
-Action = namedtuple('Action', 'player type r q',
-                    defaults=[None, None, None, None])
-
+Action = namedtuple('Action', 'player type r q')
+Action.__new__.__defaults__ = (None,) * len(Action._fields)
 
 class Player:
     player: str = ""
