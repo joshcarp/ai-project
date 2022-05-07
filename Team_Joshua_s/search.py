@@ -1,12 +1,9 @@
-from copy import copy
 import json
 from collections import namedtuple
+from copy import copy
 from math import inf
 from sys import argv
 from typing import List, Union, Callable
-from itertools import cycle
-from collections import deque
-
 
 from Team_Joshua_s import util
 
@@ -14,10 +11,12 @@ from Team_Joshua_s import util
 class Hexagon:
     pass
 
+
 Action = namedtuple('Action', 'player type r q')
 Action.__new__.__defaults__ = (None,) * len(Action._fields)
 
 Mutation = namedtuple('Mutation', 'color turn r q')
+
 
 class Hexagon:
     """
@@ -39,13 +38,12 @@ class Hexagon:
     # node.
     previous: Union[Hexagon, None] = None
 
-    def __init__(self, i: int, j: int, color = None):
+    def __init__(self, i: int, j: int, color=None):
         self.coords = (i, j)
         self.incr_cost = 1
         self.total_cost: Union[int, float] = inf
         if color is not None:
             self.color = color
-
 
     def __repr__(self):
         return f"({self.coords[0]},{self.coords[1]})"
@@ -114,7 +112,6 @@ class Input:
             return
         data = json.loads(string)
         self.__dict__ = data
-
 
 
 class Board:
@@ -186,6 +183,7 @@ class Board:
     def process_action(b, action: Action, turn: int) -> List[Mutation]:
         coords = (action.r, action.q)
         changed = [Mutation(action.player, turn, action.r, action.q)]
+
         def filter1(x):
             return x.color != action.player and x.color != ""
 
@@ -201,9 +199,11 @@ class Board:
                 continue
             neighneighs = b.neighbours(elem, filter=filter2)
             for elem2 in neighneighs:
-                if elem2.coords in seen.keys() and seen[elem2.coords].color == elem.color:
+                if elem2.coords in seen.keys(
+                ) and seen[elem2.coords].color == elem.color:
                     changed.append(Mutation("", turn, *elem.coords))
-                    changed.append(Mutation("", turn, *seen[elem2.coords].coords))
+                    changed.append(
+                        Mutation("", turn, *seen[elem2.coords].coords))
                     return changed
                 seen[elem2.coords] = elem
         return changed
@@ -213,14 +213,18 @@ class Board:
         cpy.turn_num += 1
         changed = []
         if action.type == "STEAL":
-            changed.append(Mutation(action.player, cpy.turn_num, self.last_action.r, self.last_action.q))
+            changed.append(
+                Mutation(
+                    action.player,
+                    cpy.turn_num,
+                    self.last_action.r,
+                    self.last_action.q))
         elif action.type == "PLACE":
             changed.extend(cpy.process_action(action, cpy.turn_num))
             cpy.last_action = action
         for elem in changed:
             cpy.mutations[elem.r][elem.q].append(elem)
         return cpy
-
 
     def neighbours(self, piece: Hexagon, filter: Callable[[
             Hexagon], bool] = lambda

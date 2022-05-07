@@ -152,4 +152,3 @@ def print_board(n, board_dict, message="", ansi=False, **kwargs):
 
     """
     print(board_string(n, board_dict, message="", ansi=False), **kwargs)
-

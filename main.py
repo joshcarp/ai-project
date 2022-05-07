@@ -28,6 +28,5 @@ print(linked_lst)
 print(linked_lstcpy)
 
 
-
-if __name__=="__main__":
+if __name__ == "__main__":
     pass

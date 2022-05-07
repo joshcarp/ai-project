@@ -1,123 +1,14 @@
 import Team_Joshua_s.player as player
 import Team_Joshua_s.search as search
 import Team_Joshua_s.util as util
-import cProfile, pstats, io
+import cProfile
+import pstats
+import io
 from pstats import SortKey
 
 
-
-def testsquare():
-    rawinput: search.Input = search.Input("""{
-  "n": 5,
-  "board": [
-      ["b", 1, 0],
-      ["b", 1, 1],
-      ["b", 1, 3],
-      ["b", 3, 2]
-
-  ],
-  "start": [4, 2],
-  "goal": [0, 0]
-  }
-""")
-    expected = """8
-(4,2)
-(4,1)
-(3,1)
-(2,1)
-(1,2)
-(0,2)
-(0,1)
-(0,0)"""
-    board: search.Board = search.Board(rawinput)
-    solution = board.a_star()
-    output = search.format_output(solution)
-    assert output == expected
-
-
-def testsquare2():
-    rawinput: search.Input = search.Input(
-        """{"n":5,"board":[["b",1,0],["b",1,1],["b",1,3],["b",3,2],["b",3,3],
-        ["b",1,2],["b",2,0],["b",3,0],["b",4,0]],"start":[4,2],
-        "goal":[0,0]}""")
-    expected = """10
-(4,2)
-(4,3)
-(3,4)
-(2,4)
-(1,4)
-(0,4)
-(0,3)
-(0,2)
-(0,1)
-(0,0)"""
-    board: search.Board = search.Board(rawinput)
-    solution = board.a_star()
-    output = search.format_output(solution)
-    assert output == expected
-
-
-def testsquareimpossible():
-    rawinput: search.Input = search.Input(
-        """{"n":5,"board":[["b",1,0],["b",1,1],["b",1,3],["b",3,2],
-        ["b",2,4],["b",2,0],["b",1,2],["b",1,4]],
-        "start":[4,2],"goal":[0,0]}""")
-    expected = """0
-"""
-    board: search.Board = search.Board(rawinput)
-    solution = board.a_star()
-    output = search.format_output(solution)
-    assert output == expected
-
-
-def testsquareimpossible2():
-    rawinput: search.Input = search.Input(
-        """{"n":5,"board":[["b",3,1],["b",2,2],
-        ["b",1,3],["b",0,4]],"start":[4,4],"goal":[0,0]}""")
-    board: search.Board = search.Board(rawinput)
-    solutionbfs = bfs(board)
-    outputbfs = search.format_output(solutionbfs)
-
-    board2: search.Board = search.Board(rawinput)
-    solutionastar = board2.a_star()
-    outputastar = search.format_output(solutionastar)
-    assert outputbfs == outputastar
-
-
-def testsquare3():
-    rawinput: search.Input = search.Input(
-        """{"n":5,"board":[["b",2,2],["b",1,3],
-        ["b",0,4],["b",3,1],["b",2,0],["b",1,0]],
-        "start":[4,2],"goal":[0,0]}""")
-    board: search.Board = search.Board(rawinput)
-    solutionbfs = bfs(board)
-    outputbfs = search.format_output(solutionbfs)
-
-    board2: search.Board = search.Board(rawinput)
-    solutionastar = board2.a_star()
-    outputastar = search.format_output(solutionastar)
-    assert outputbfs == outputastar
-
-
-def testsquare4():
-    rawinput: search.Input = search.Input(
-        """{"n":5,"board":[["b",4,0],["b",4,2],["b",2,1],["b",2,3],
-        ["b",0,1],["b",0,3],["b",1,2],
-        ["b",4,3]],"start":[4,4],"goal":[0,0]}""")
-    board: search.Board = search.Board(rawinput)
-    solutionbfs = bfs(board)
-    outputbfs = search.format_output(solutionbfs)
-
-    board2: search.Board = search.Board(rawinput)
-    solutionastar = board2.a_star()
-    outputastar = search.format_output(solutionastar)
-    assert outputbfs == outputastar
-
-
 def testneighbours():
-    input = search.Input("{}")
-    input.n = 5
-    board: search.Board = search.Board(input)
+    board: search.Board = search.Board(5)
     tests = [
         {
             "coord": (0, 0),
@@ -143,29 +34,12 @@ def testneighbours():
         assert elem["neighbours"] == {e.coords for e in neighbours}
 
 
-def bfs(self: search.Board):
-    queue = [self.start]
-    visited = {self.start}
-    while len(queue) != 0:
-        current = queue.pop(0)
-        if current.coords == self.goal.coords:
-            break
-        for neig in self.neighbours(current):
-            if neig in visited:
-                continue
-            neig.previous = current
-            queue.append(neig)
-            visited.add(neig)
-    return self.goal.get_path()
-
-
 def testplayer():
     pl = player.Player("red", 4)
     pl.turn("red", ("PLACE", 1, 0))
     util.print_board(*pl.board.dict())
     assert pl.board.piece(1, 0).color == "red"
-    pl.turn("blue", ("STEAL",)) # TODO: @joshcarp, make steal a thing again
-    # pl.turn("blue", ("PLACE", 1, 0))
+    pl.turn("blue", ("STEAL",))
     assert pl.board.piece(1, 0).color == "blue"
     util.print_board(*pl.board.dict())
     pl.turn("blue", ("PLACE", 1, 1))
@@ -189,7 +63,6 @@ def testplayer():
 def testplayer2():
     pr = cProfile.Profile()
     pr.enable()
-
     pl = player.Player("red", 4, depth=3)
     pl2 = player.Player("blue", 4, depth=1, dumb=True)
 
@@ -219,6 +92,3 @@ def testplayer2():
     ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
     ps.print_stats()
     print(s.getvalue())
-
-def testfoo():
-    pass

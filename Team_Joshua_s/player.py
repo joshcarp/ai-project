@@ -1,5 +1,4 @@
 from collections import namedtuple
-from copy import deepcopy
 
 import Team_Joshua_s.search as search
 
@@ -29,7 +28,7 @@ class Player:
         """
         self.board = search.Board(n)
         self.player = player
-        if depth != None:
+        if depth is not None:
             self.depth = depth
         self.dumb = dumb
 
