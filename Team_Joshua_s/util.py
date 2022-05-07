@@ -42,54 +42,7 @@ def print_coordinate(r, q, **kwargs):
     print(f"({r},{q})", **kwargs)
 
 
-def print_board(n, board_dict, message="", ansi=False, **kwargs):
-    """
-    For help with visualisation and debugging: output a board diagram with
-    any information you like (tokens, heuristic values, distances, etc.).
-
-    Arguments:
-
-    n -- The size of the board
-    board_dict -- A dictionary with (r, q) tuples as keys (following axial
-        coordinate system from specification) and printable objects (e.g.
-        strings, numbers) as values.
-        This function will arrange these printable values on a hex grid
-        and output the result.
-        Note: At most the first 5 characters will be printed from the string
-        representation of each value.
-    message -- A printable object (e.g. string, number) that will be placed
-        above the board in the visualisation. Default is "" (no message).
-    ansi -- True if you want to use ANSI control codes to enrich the output.
-        Compatible with terminals supporting ANSI control codes. Default
-        False.
-
-    Any other keyword arguments are passed through to the print function.
-
-    Example:
-
-        >>> board_dict = {
-        ...     (0, 4): "hello",
-        ...     (1, 1): "r",
-        ...     (1, 2): "b",
-        ...     (3, 2): "$",
-        ...     (2, 3): "***",
-        ... }
-        >>> print_board(5, board_dict, "message goes here", ansi=False)
-        # message goes here
-        #              .-'-._.-'-._.-'-._.-'-._.-'-.
-        #             |     |     |     |     |     |
-        #           .-'-._.-'-._.-'-._.-'-._.-'-._.-'
-        #          |     |     |  $  |     |     |
-        #        .-'-._.-'-._.-'-._.-'-._.-'-._.-'
-        #       |     |     |     | *** |     |
-        #     .-'-._.-'-._.-'-._.-'-._.-'-._.-'
-        #    |     |  r  |  b  |     |     |
-        #  .-'-._.-'-._.-'-._.-'-._.-'-._.-'
-        # |     |     |     |     |hello|
-        # '-._.-'-._.-'-._.-'-._.-'-._.-'
-
-    """
-
+def board_string(n, board_dict, message="", ansi=False) -> str:
     stitch_pattern = ".-'-._"
     edge_col_len = 3
     v_divider = "|"
@@ -148,4 +101,55 @@ def print_board(n, board_dict, message="", ansi=False, **kwargs):
     output += apply_ansi_s(lower_stitching, color="r") + "\n"
 
     # Print to terminal (with optional args forwarded)
-    print(output, **kwargs)
+    return output
+
+
+def print_board(n, board_dict, message="", ansi=False, **kwargs):
+    """
+    For help with visualisation and debugging: output a board diagram with
+    any information you like (tokens, heuristic values, distances, etc.).
+
+    Arguments:
+
+    n -- The size of the board
+    board_dict -- A dictionary with (r, q) tuples as keys (following axial
+        coordinate system from specification) and printable objects (e.g.
+        strings, numbers) as values.
+        This function will arrange these printable values on a hex grid
+        and output the result.
+        Note: At most the first 5 characters will be printed from the string
+        representation of each value.
+    message -- A printable object (e.g. string, number) that will be placed
+        above the board in the visualisation. Default is "" (no message).
+    ansi -- True if you want to use ANSI control codes to enrich the output.
+        Compatible with terminals supporting ANSI control codes. Default
+        False.
+
+    Any other keyword arguments are passed through to the print function.
+
+    Example:
+
+        >>> board_dict = {
+        ...     (0, 4): "hello",
+        ...     (1, 1): "r",
+        ...     (1, 2): "b",
+        ...     (3, 2): "$",
+        ...     (2, 3): "***",
+        ... }
+        >>> print_board(5, board_dict, "message goes here", ansi=False)
+        # message goes here
+        #              .-'-._.-'-._.-'-._.-'-._.-'-.
+        #             |     |     |     |     |     |
+        #           .-'-._.-'-._.-'-._.-'-._.-'-._.-'
+        #          |     |     |  $  |     |     |
+        #        .-'-._.-'-._.-'-._.-'-._.-'-._.-'
+        #       |     |     |     | *** |     |
+        #     .-'-._.-'-._.-'-._.-'-._.-'-._.-'
+        #    |     |  r  |  b  |     |     |
+        #  .-'-._.-'-._.-'-._.-'-._.-'-._.-'
+        # |     |     |     |     |hello|
+        # '-._.-'-._.-'-._.-'-._.-'-._.-'
+
+    """
+    print(board_string(n, board_dict, message="", ansi=False), **kwargs)
+

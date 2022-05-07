@@ -1,6 +1,12 @@
+import io
+
+import Team_Joshua_s.player as player
 import Team_Joshua_s.search as search
 import Team_Joshua_s.util as util
-import Team_Joshua_s.player as player
+import cProfile
+import cProfile, pstats, io
+from pstats import SortKey
+
 
 
 def testsquare():
@@ -183,16 +189,38 @@ def testplayer():
 
 
 def testplayer2():
-    pl = player.Player("red", 4)
-    pl.turn("blue", ("PLACE", 1, 0))
-    pl.turn("blue", ("PLACE", 1, 1))
-    pl.turn("red", ("PLACE", 0, 1))
-    util.print_board(*pl.board.dict())
-    act = pl.action()
-    print(act)
-    pl.turn(act.player, (act.type, act.r, act.q))
-    util.print_board(*pl.board.dict())
+    pr = cProfile.Profile()
+    pr.enable()
 
+    pl = player.Player("red", 4, depth=3)
+    pl2 = player.Player("blue", 4, depth=1)
+
+    for i in range(15):
+        act = pl.action()
+        print(act)
+        pl.turn(pl.player, act)
+        pl2.turn(pl.player, act)
+        util.print_board(*pl.board.dict())
+        print("red: ", len(pl.board.filter_pieces(lambda x: x.color == "red")))
+        print("blue: ",
+              len(pl.board.filter_pieces(lambda x: x.color == "blue")))
+        act = pl2.action()
+        print(act)
+        pl.turn(pl2.player, act)
+        pl2.turn(pl2.player, act)
+        util.print_board(*pl.board.dict())
+
+        print("red: ", len(pl.board.filter_pieces(lambda x: x.color == "red")))
+        print("blue: ",
+              len(pl.board.filter_pieces(lambda x: x.color == "blue")))
+        if len(pl.board.filter_pieces(lambda x: x.color == "")) <= 2:
+            break
+    pr.disable()
+    s = io.StringIO()
+    sortby = SortKey.CUMULATIVE
+    ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+    ps.print_stats()
+    print(s.getvalue())
 
 def testfoo():
     pass

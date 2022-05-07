@@ -2,6 +2,10 @@ import json
 from math import inf
 from sys import argv
 from typing import List, Union, Callable
+from itertools import cycle
+
+
+from Team_Joshua_s import util
 
 
 class Hexagon:
@@ -130,7 +134,7 @@ class Board:
             self.piece(elem[1], elem[2]).set_color(elem[0])
 
     def __repr__(self):
-        return f"{self.pieces}"
+        return util.board_string(*self.dict())
 
     def dict(self) -> (int, {}):
         d: {} = {}

@@ -7,12 +7,18 @@ Action = namedtuple('Action', 'player type r q')
 Action.__new__.__defaults__ = (None,) * len(Action._fields)
 
 
+def other_piece(current_piece: str) -> str:
+    return {"red": "blue", "blue": "red"}[current_piece]
+
+
 class Player:
     player: str = ""
     board: search.Board = None
     plays: search.List[Action] = []
+    depth: int = 2
+    dumb: bool = False
 
-    def __init__(self, player: str, n: int):
+    def __init__(self, player: str, n: int, depth: int = None, dumb=False):
         """
         Called once at the beginning of a game to initialise this player.
         Set up an internal representation of the game state.
@@ -25,13 +31,22 @@ class Player:
         inp.n = n
         self.board = search.Board(inp)
         self.player = player
+        if depth != None:
+            self.depth = depth
+        self.dumb = dumb
 
     def action(self):
         """
        Called at the beginning of your turn. Based on the current state
        of the game, select an action to play.
        """
-        return action(self.player, self.plays, self.board)
+        if self.dumb:
+            return ("PLACE", *self.board.filter_pieces(lambda x: x.color == "")[0].coords)
+        act = action(self.player, self.player, self.plays, self.board, 0,
+                     self.depth)
+        if self.board.piece(act[0].r, act[0].q).color != "":
+            raise Exception
+        return act[0]
 
     def turn(self, player, action):
         """
@@ -46,20 +61,41 @@ class Player:
         """
         if isinstance(action, str):
             action = (action,)
-        action = Action(player, *action)
+        if not isinstance(action, Action):
+            action = Action(player, *action)
         turn(self.plays, self.board, action)
 
 
-def action(player: str, plays: [], board: search.Board):
+def action(our: str, player: str, plays: [], board: search.Board, depth: int,
+           limit: int):
     first_moves = []
+    if depth == limit:
+        return None
     for pieces in board.filter_pieces(lambda x: x.color == ""):
         boardcpy = deepcopy(board)
         playscpy = deepcopy(plays)
-        action = Action(player, "PLACE", *pieces.coords)
-        turn(playscpy, boardcpy, action)
-        first_moves.append(
-            (boardcpy, playscpy, action, evaluate(boardcpy, player)))
-    return max(first_moves, key=lambda x: x[3])[2]
+        act = Action(player, "PLACE", *pieces.coords)
+        turn(playscpy, boardcpy, act)
+        terminal = action(our,
+                         other_piece(player),
+                         playscpy,
+                         boardcpy,
+                         depth + 1,
+                         limit)
+        if terminal is None:
+            terminal = (act, boardcpy)
+        else:
+            terminal = (act, terminal[1])
+        first_moves.append(terminal)
+    ma = max(first_moves, key=lambda x: evaluate(x[1], our))
+    mi = min(first_moves, key=lambda x: evaluate(x[1], our))
+    scoremin = evaluate(mi[1], our)
+    scoremax = evaluate(ma[1], our)
+    print(our, scoremax, scoremin)
+    if our == player:
+        return ma
+    print(our,scoremax,scoremin)
+    return mi
 
 
 def turn(plays: [], board: search.Board, action: Action):
@@ -100,7 +136,10 @@ def capture(b: search.Board, action: Action):
 
 
 def evaluate(board: search.Board, color: str) -> int:
-    return len(
+    utility = len(
         [e for sub in board.pieces for e in sub if e.color == color]) - len(
         [e for sub in board.pieces for e in sub if
          e.color != color and e.color != ""])
+    # if len([e for sub in board.pieces for e in sub if e.color == color]) > 2:
+    #     print()
+    return utility
