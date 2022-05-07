@@ -27,9 +27,7 @@ class Player:
         play as Red, or the string "blue" if your player will play
         as Blue.
         """
-        inp: search.Input = search.Input()
-        inp.n = n
-        self.board = search.Board(inp)
+        self.board = search.Board(n)
         self.player = player
         if depth != None:
             self.depth = depth
@@ -41,9 +39,10 @@ class Player:
        of the game, select an action to play.
        """
         if self.dumb:
-            return ("PLACE", *self.board.filter_pieces(lambda x: x.color == "")[0].coords)
-        act = action(self.player, self.player, self.plays, self.board, 0,
-                     self.depth)
+            return ("PLACE",
+                    *self.board.filter_pieces(lambda x: x.color == "")[
+                        0].coords)
+        act = action(self.player, self.player, self.board, 0, self.depth)
         if self.board.piece(act[0].r, act[0].q).color != "":
             raise Exception
         return act[0]
@@ -63,82 +62,36 @@ class Player:
             action = (action,)
         if not isinstance(action, Action):
             action = Action(player, *action)
-        turn(self.plays, self.board, action)
+        self.board = self.board.action(action)
 
 
-def action(our: str, player: str, plays: [], board: search.Board, depth: int,
+def action(our: str, player: str, board: search.Board, depth: int,
            limit: int):
     first_moves = []
     if depth == limit:
         return None
     for pieces in board.filter_pieces(lambda x: x.color == ""):
-        boardcpy = deepcopy(board)
-        playscpy = deepcopy(plays)
         act = Action(player, "PLACE", *pieces.coords)
-        turn(playscpy, boardcpy, act)
+        newboard = board.action(act)
         terminal = action(our,
-                         other_piece(player),
-                         playscpy,
-                         boardcpy,
-                         depth + 1,
-                         limit)
+                          other_piece(player),
+                          newboard,
+                          depth + 1,
+                          limit)
         if terminal is None:
-            terminal = (act, boardcpy)
+            terminal = (act, newboard)
         else:
             terminal = (act, terminal[1])
         first_moves.append(terminal)
-    ma = max(first_moves, key=lambda x: evaluate(x[1], our))
-    mi = min(first_moves, key=lambda x: evaluate(x[1], our))
-    scoremin = evaluate(mi[1], our)
-    scoremax = evaluate(ma[1], our)
-    print(our, scoremax, scoremin)
     if our == player:
-        return ma
-    print(our,scoremax,scoremin)
-    return mi
-
-
-def turn(plays: [], board: search.Board, action: Action):
-    plays.append(action)
-    if action.type == "STEAL":
-        prev = plays[-2]
-        board.piece(prev.r, prev.q).set_color(action.player)
-    if action.type == "PLACE":
-        capture(board, action)
-        board.piece(action.r, action.q).set_color(action.player)
-
-
-def capture(b: search.Board, action: Action):
-    coords = (action.r, action.q)
-
-    def filter1(x):
-        return x.color != action.player and x.color != ""
-
-    def filter2(x):
-        return x.color == action.player and x.color != ""
-
-    neighs = b.neighbours(b.piece(*coords), filter=filter1)
-    seen: {search.Hexagon: search.Hexagon} = {}
-    for elem in neighs:
-        if elem.color == action.player or elem.color == "":
-            continue
-        if elem.coords == coords:
-            continue
-        neighneighs = b.neighbours(elem, filter=filter2)
-        for elem2 in neighneighs:
-            if elem2 in seen.keys() and seen[elem2].color == elem.color:
-                b.piece(*elem.coords).set_color("")
-                b.piece(*seen[elem2].coords).set_color("")
-                b.piece(*coords).set_color(action.player)
-                return b
-            seen[elem2] = elem
-    return
+        return max(first_moves, key=lambda x: evaluate(x[1], our))
+    return min(first_moves, key=lambda x: evaluate(x[1], our))
 
 
 def evaluate(board: search.Board, color: str) -> int:
     utility = len(
-        [e for sub in board.pieces for e in sub if e.color == color]) - len(
-        [e for sub in board.pieces for e in sub if
+        [e for sub in board.pieces() for e in sub if e.color == color]) - len(
+        [e for sub in board.pieces() for e in sub if
          e.color != color and e.color != ""])
     # if len([e for sub in board.pieces for e in sub if e.color == color]) > 2:
     #     print()

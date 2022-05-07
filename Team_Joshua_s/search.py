@@ -1,8 +1,11 @@
+from copy import copy
 import json
+from collections import namedtuple
 from math import inf
 from sys import argv
 from typing import List, Union, Callable
 from itertools import cycle
+from collections import deque
 
 
 from Team_Joshua_s import util
@@ -11,6 +14,10 @@ from Team_Joshua_s import util
 class Hexagon:
     pass
 
+Action = namedtuple('Action', 'player type r q')
+Action.__new__.__defaults__ = (None,) * len(Action._fields)
+
+Mutation = namedtuple('Mutation', 'color turn r q')
 
 class Hexagon:
     """
@@ -32,10 +39,13 @@ class Hexagon:
     # node.
     previous: Union[Hexagon, None] = None
 
-    def __init__(self, i: int, j: int):
+    def __init__(self, i: int, j: int, color = None):
         self.coords = (i, j)
         self.incr_cost = 1
         self.total_cost: Union[int, float] = inf
+        if color is not None:
+            self.color = color
+
 
     def __repr__(self):
         return f"({self.coords[0]},{self.coords[1]})"
@@ -67,13 +77,13 @@ class Hexagon:
         elems.reverse()
         return elems
 
-    def set_color(self, color: str):
-        """
-        set_color sets the current Hexagon's color to the input string and
-        sets the incremental cost to infinity
-        """
-        self.color = color
-        self.incr_cost = inf
+    # def set_color(self, color: str):
+    #     """
+    #     set_color sets the current Hexagon's color to the input string and
+    #     sets the incremental cost to infinity
+    #     """
+    #     self.color = color
+    #     self.incr_cost = inf
 
     def __add__(self, other):
         return Hexagon(self.coords[0] + other.coords[0],
@@ -106,39 +116,44 @@ class Input:
         self.__dict__ = data
 
 
+
 class Board:
     """
     Board controls all the information about the state and implements the
     path finding algorithm
     """
-    pieces: List[List[Hexagon]]
+    mutations: List[List[List[Mutation]]]
     start: Hexagon
     goal: Hexagon
     n: int
+    turn_num: int = 0
+    last_action: Action = None
 
-    def __init__(self, input: Union[Input, None]):
-        self.pieces = []
-        if input is None:
-            return
-        self.n = input.n
-        for i in range(input.n):
-            self.pieces.append([])
-            for j in range(input.n):
-                new_piece = Hexagon(i, j)
-                self.pieces[i].append(new_piece)
-        if len(input.start) >= 2:
-            self.start = self.piece(input.start[0], input.start[1])
-        if len(input.goal) >= 2:
-            self.goal = self.piece(input.goal[0], input.goal[1])
-        for elem in input.board:
-            self.piece(elem[1], elem[2]).set_color(elem[0])
+    def pieces(self) -> List[List[Hexagon]]:
+        pieces: List[List[Hexagon]] = []
+        for i in range(self.n):
+            pieces.append([])
+            for j in range(self.n):
+                color = ""
+                if len(self.mutations[i][j]) > 0:
+                    color = self.mutations[i][j][-1].color
+                pieces[i].append(Hexagon(i, j, color))
+        return pieces
+
+    def __init__(self, n):
+        self.n = n
+        self.mutations = []
+        for i in range(n):
+            self.mutations.append([])
+            for j in range(n):
+                self.mutations[i].append([])
 
     def __repr__(self):
         return util.board_string(*self.dict())
 
     def dict(self) -> (int, {}):
         d: {} = {}
-        for list in self.pieces:
+        for list in self.pieces():
             for e in list:
                 if e.color != "":
                     d[e.coords] = e.color
@@ -146,19 +161,19 @@ class Board:
 
     def filter_pieces(self,
                       filter: Callable[[Hexagon], bool] = lambda x: True):
-        return [e for sub in self.pieces for e in sub if filter(e)]
+        return [e for sub in self.pieces() for e in sub if filter(e)]
 
     def piece(self, x: int, y: int) -> Hexagon:
         """
         piece returns the Hexagon at coordinates (x, y)
         """
-        return self.pieces[x][y]
+        return self.pieces()[x][y]
 
     def piece_tuple(self, x: (int, int)) -> Hexagon:
         """
         piece_tuple returns the Hexagon at coordinates (x[0], x[1])
         """
-        return self.pieces[x[0]][x[1]]
+        return self.pieces()[x[0]][x[1]]
 
     def valid(self, piece: Hexagon) -> bool:
         """
@@ -167,6 +182,45 @@ class Board:
         """
         return piece.coords[0] in range(0, self.n) and \
             piece.coords[1] in range(0, self.n)
+
+    def process_action(b, action: Action, turn: int) -> List[Mutation]:
+        coords = (action.r, action.q)
+        changed = [Mutation(action.player, turn, action.r, action.q)]
+        def filter1(x):
+            return x.color != action.player and x.color != ""
+
+        def filter2(x):
+            return x.color == action.player and x.color != ""
+
+        neighs = b.neighbours(b.piece(*coords), filter=filter1)
+        seen: {Hexagon: Hexagon} = {}
+        for elem in neighs:
+            if elem.color == action.player or elem.color == "":
+                continue
+            if elem.coords == coords:
+                continue
+            neighneighs = b.neighbours(elem, filter=filter2)
+            for elem2 in neighneighs:
+                if elem2.coords in seen.keys() and seen[elem2.coords].color == elem.color:
+                    changed.append(Mutation("", turn, *elem.coords))
+                    changed.append(Mutation("", turn, *seen[elem2.coords].coords))
+                    return changed
+                seen[elem2.coords] = elem
+        return changed
+
+    def action(self, action: Action):
+        cpy: Board = copy(self)
+        cpy.turn_num += 1
+        changed = []
+        if action.type == "STEAL":
+            changed.append(Mutation(action.player, cpy.turn_num, self.last_action.r, self.last_action.q))
+        elif action.type == "PLACE":
+            changed.extend(cpy.process_action(action, cpy.turn_num))
+            cpy.last_action = action
+        for elem in changed:
+            cpy.mutations[elem.r][elem.q].append(elem)
+        return cpy
+
 
     def neighbours(self, piece: Hexagon, filter: Callable[[
             Hexagon], bool] = lambda
@@ -223,6 +277,13 @@ class Board:
         # current at this point is goal, so traverse back to start and return
         # the list
         return current.get_path()
+
+    def __copy__(self):
+        newboard = Board(self.n)
+        for i in range(self.n):
+            for j in range(self.n):
+                newboard.mutations[i][j] = self.mutations[i][j].copy()
+        return newboard
 
 
 def format_output(path: List[Hexagon]) -> str:

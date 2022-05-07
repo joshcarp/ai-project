@@ -1,9 +1,6 @@
-import io
-
 import Team_Joshua_s.player as player
 import Team_Joshua_s.search as search
 import Team_Joshua_s.util as util
-import cProfile
 import cProfile, pstats, io
 from pstats import SortKey
 
@@ -167,7 +164,8 @@ def testplayer():
     pl.turn("red", ("PLACE", 1, 0))
     util.print_board(*pl.board.dict())
     assert pl.board.piece(1, 0).color == "red"
-    pl.turn("blue", ("STEAL",))
+    pl.turn("blue", ("STEAL",)) # TODO: @joshcarp, make steal a thing again
+    # pl.turn("blue", ("PLACE", 1, 0))
     assert pl.board.piece(1, 0).color == "blue"
     util.print_board(*pl.board.dict())
     pl.turn("blue", ("PLACE", 1, 1))
@@ -193,7 +191,7 @@ def testplayer2():
     pr.enable()
 
     pl = player.Player("red", 4, depth=3)
-    pl2 = player.Player("blue", 4, depth=1)
+    pl2 = player.Player("blue", 4, depth=1, dumb=True)
 
     for i in range(15):
         act = pl.action()
