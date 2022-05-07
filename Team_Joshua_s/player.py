@@ -1,9 +1,4 @@
-from collections import namedtuple
-
 import Team_Joshua_s.search as search
-
-Action = namedtuple('Action', 'player type r q')
-Action.__new__.__defaults__ = (None,) * len(Action._fields)
 
 
 def other_piece(current_piece: str) -> str:
@@ -13,7 +8,7 @@ def other_piece(current_piece: str) -> str:
 class Player:
     player: str = ""
     board: search.Board = None
-    plays: search.List[Action] = []
+    plays: search.List[search.Action] = []
     depth: int = 2
     dumb: bool = False
 
@@ -59,8 +54,8 @@ class Player:
         """
         if isinstance(action, str):
             action = (action,)
-        if not isinstance(action, Action):
-            action = Action(player, *action)
+        if not isinstance(action, search.Action):
+            action = search.Action(player, *action)
         self.board = self.board.action(action)
 
 
@@ -70,7 +65,7 @@ def action(our: str, player: str, board: search.Board, depth: int,
     if depth == limit:
         return None
     for pieces in board.filter_pieces(lambda x: x.color == ""):
-        act = Action(player, "PLACE", *pieces.coords)
+        act = search.Action(player, "PLACE", *pieces.coords)
         newboard = board.action(act)
         terminal = action(our,
                           other_piece(player),
@@ -92,6 +87,4 @@ def evaluate(board: search.Board, color: str) -> int:
         [e for sub in board.pieces() for e in sub if e.color == color]) - len(
         [e for sub in board.pieces() for e in sub if
          e.color != color and e.color != ""])
-    # if len([e for sub in board.pieces for e in sub if e.color == color]) > 2:
-    #     print()
     return utility
