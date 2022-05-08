@@ -96,13 +96,9 @@ class Board:
         """
         piece returns the Hexagon at coordinates (x, y)
         """
-        return self.pieces()[x][y]
-
-    def piece_tuple(self, x: (int, int)) -> Hexagon:
-        """
-        piece_tuple returns the Hexagon at coordinates (x[0], x[1])
-        """
-        return self.pieces()[x[0]][x[1]]
+        if len(self.mutations[x][y]) == 0:
+            return Hexagon(x, y)
+        return Hexagon(x, y, self.mutations[x][y][-1].color)
 
     def valid(self, piece: Hexagon) -> bool:
         """
