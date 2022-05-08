@@ -1,8 +1,6 @@
+import math
+
 import Team_Joshua_s.search as search
-
-
-def other_piece(current_piece: str) -> str:
-    return {"red": "blue", "blue": "red"}[current_piece]
 
 
 class Player:
@@ -36,10 +34,11 @@ class Player:
             return ("PLACE",
                     *self.board.filter_pieces(lambda x: x.color == "")[
                         0].coords)
-        act = action(self.player, self.player, self.board, 0, self.depth)
-        if self.board.piece(act[0].r, act[0].q).color != "":
+        act = action(self.player, self.player, self.board, self.depth,
+                     -math.inf, math.inf)
+        if self.board.piece(act[1].r, act[1].q).color != "":
             raise Exception
-        return act[0]
+        return act[1]
 
     def turn(self, player, action):
         """
@@ -59,27 +58,37 @@ class Player:
         self.board = self.board.action(action)
 
 
-def action(our: str, player: str, board: search.Board, depth: int,
-           limit: int):
-    first_moves = []
-    if depth == limit:
-        return None
+def next_player(current: str) -> str:
+    if current == "red":
+        return "blue"
+    return "red"
+
+
+def action(our: str, player: str, board: search.Board, depth: int, a: float,
+           b: float):
+    if depth == 0:
+        return evaluate(board, our), None
+    max_score, min_score = (-math.inf, None), (math.inf, None)
     for pieces in board.filter_pieces(lambda x: x.color == ""):
         act = search.Action(player, "PLACE", *pieces.coords)
-        newboard = board.action(act)
         terminal = action(our,
-                          other_piece(player),
-                          newboard,
-                          depth + 1,
-                          limit)
-        if terminal is None:
-            terminal = (act, newboard)
+                          next_player(player),
+                          board.action(act),
+                          depth - 1,
+                          a,
+                          b)
+        terminal = (terminal[0], act)
+        if our == player:
+            max_score = max(max_score, terminal, key=lambda x: x[0])
+            a = max(a, terminal[0])
         else:
-            terminal = (act, terminal[1])
-        first_moves.append(terminal)
+            min_score = min(min_score, terminal, key=lambda x: x[0])
+            b = min(b, terminal[0])
+        if b <= a:
+            break
     if our == player:
-        return max(first_moves, key=lambda x: evaluate(x[1], our))
-    return min(first_moves, key=lambda x: evaluate(x[1], our))
+        return max_score
+    return min_score
 
 
 def evaluate(board: search.Board, color: str) -> int:

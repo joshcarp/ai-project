@@ -63,10 +63,10 @@ def testplayer():
 def testplayer2():
     pr = cProfile.Profile()
     pr.enable()
-    pl = player.Player("red", 4, depth=3)
-    pl2 = player.Player("blue", 4, depth=1, dumb=True)
+    pl = player.Player("red", 4, depth=5)
+    pl2 = player.Player("blue", 4, dumb=True)
 
-    for i in range(15):
+    for i in range(6):
         act = pl.action()
         print(act)
         pl.turn(pl.player, act)
@@ -89,6 +89,7 @@ def testplayer2():
     pr.disable()
     s = io.StringIO()
     # sortby = SortKey.CUMULATIVE
+    # ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
     ps = pstats.Stats(pr, stream=s)
     ps.print_stats()
     print(s.getvalue())
