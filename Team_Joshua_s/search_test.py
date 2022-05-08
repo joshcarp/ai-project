@@ -59,6 +59,8 @@ def testplayer():
     util.print_board(*pl.board.dict())
     assert player.evaluate(pl.board, "red") == -2
 
+# @profile
+
 
 def testplayer2():
     pr = cProfile.Profile()
@@ -93,3 +95,6 @@ def testplayer2():
     ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
     ps.print_stats()
     print(s.getvalue())
+
+# if __name__ == '__main__':
+#     testplayer2()

@@ -57,10 +57,7 @@ class Board:
     path finding algorithm
     """
     mutations: List[List[List[Hexagon]]]
-    start: Hexagon
-    goal: Hexagon
     n: int
-    turn_num: int = 0
     last_action: Action = None
 
     def pieces(self) -> List[List[Hexagon]]:
@@ -107,8 +104,6 @@ class Board:
         """
         piece returns the Hexagon at coordinates (x, y)
         """
-        if len(self.mutations[x][y]) == 0:
-            return Hexagon(x, y)
         return Hexagon(x, y, self.mutations[x][y][-1].color)
 
     def valid(self, piece: Hexagon) -> bool:
@@ -149,7 +144,6 @@ class Board:
 
     def action(self, action: Action):
         cpy: Board = copy(self)
-        cpy.turn_num += 1
         changed = []
         if action.type == "STEAL":
             changed.append(
@@ -178,6 +172,7 @@ class Board:
 
     def __copy__(self):
         newboard = Board(self.n)
+        newboard.last_action = self.last_action
         for i in range(self.n):
             for j in range(self.n):
                 newboard.mutations[i][j] = self.mutations[i][j].copy()
