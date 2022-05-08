@@ -92,8 +92,12 @@ def action(our: str, player: str, board: search.Board, depth: int, a: float,
 
 
 def evaluate(board: search.Board, color: str) -> int:
-    utility = len(
-        [e for sub in board.pieces() for e in sub if e.color == color]) - len(
-        [e for sub in board.pieces() for e in sub if
-         e.color != color and e.color != ""])
+    utility = 0
+    for i in range(board.n):
+        for j in range(board.n):
+            mutation = board.mutations[i][j][-1]
+            if mutation.color == color:
+                utility += 1
+            elif mutation.color != color and mutation.color != "":
+                utility -= 1
     return utility
