@@ -309,7 +309,6 @@ class Board:
         opened: List[Hexagon] = [current]
         current.total_cost = 0
         while current.coords != end.coords:
-            counter += 1
             opened.sort(
                 key=lambda x: x.distance(end) + x.total_cost,
                 reverse=True
