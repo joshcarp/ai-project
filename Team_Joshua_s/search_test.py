@@ -4,7 +4,7 @@ import Team_Joshua_s.util as util
 import cProfile
 import pstats
 import io
-from pstats import SortKey
+# from pstats import SortKey
 
 
 def testneighbours():
@@ -90,9 +90,9 @@ def testplayer2():
             break
     pr.disable()
     s = io.StringIO()
-    sortby = SortKey.CUMULATIVE
-    # ps = pstats.Stats(pr, stream=s)
-    ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+    # sortby = SortKey.CUMULATIVE
+    ps = pstats.Stats(pr, stream=s)
+    # ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
     ps.print_stats()
     print(s.getvalue())
 
