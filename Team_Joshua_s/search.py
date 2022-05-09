@@ -335,7 +335,7 @@ class Board:
                 raise Exception
             seen.add(current)
             closed.append(current)
-            for neigh in self.neighbours_list(current):
+            for neigh in self.neighbours(current):
                 # neigh_path_cost is the cost to get to the neighbour
                 # from the current node
                 neigh_path_cost = current.total_cost + \
