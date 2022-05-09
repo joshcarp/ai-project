@@ -5,7 +5,6 @@ from typing import List, Union, Callable
 
 from Team_Joshua_s import util
 
-
 Action = namedtuple('Action', 'player type r q')
 Action.__new__.__defaults__ = (None,) * len(Action._fields)
 
@@ -36,6 +35,12 @@ class Hexagon:
 
     def __repr__(self):
         return f"({self.coords[0]},{self.coords[1]})"
+
+    def __eq__(self, other):
+        return self.coords == other.coords and self.color == other.color
+
+    def __hash__(self):
+        return hash(self.coords)
 
     def __add__(self, other):
         return Hexagon(self.coords[0] + other.coords[0],
@@ -114,6 +119,64 @@ class Board:
         return piece.coords[0] in range(0, self.n) and \
             piece.coords[1] in range(0, self.n)
 
+    def triangles(self, color: str) -> int:
+        """
+        triangles returns the number of triangles of a particular color in
+        the board counted in any orientation.
+        :return:
+        """
+
+        def color_filter(x):
+            return x.color == color
+
+        count = 0
+        for piece in self.filter_pieces(color_filter):
+            pieceneighs = self.neighbours(piece, color_filter)
+            for neigh in pieceneighs:
+                neighneigh = self.neighbours(neigh, color_filter)
+                if len(neighneigh.intersection(pieceneighs)) != 0:
+                    count += 1
+        # divide by 6 because for every triangle the increment will be 6
+        return count // 6
+
+    def diamonds(self, color: str) -> int:
+        """
+        diamonds returns the number of diamonds of a particular color in
+        the board
+        :return:
+        """
+
+        def color_filter(x):
+            return x.color == color
+
+        count = 0
+        for piece in self.filter_pieces(color_filter):
+            pieceneighs = self.neighbours(piece, color_filter)
+            neighs = {frozenset({p, q}) for p in pieceneighs for q in
+                      pieceneighs if p in self.neighbours(
+                q, color_filter) and q in self.neighbours(p, color_filter)}
+
+            def neighbours(one, two):
+                intersection = self.neighbours(
+                    one, color_filter).intersection(
+                    self.neighbours(
+                        two, color_filter))
+                if piece in intersection:
+                    intersection.remove(piece)
+                return intersection
+
+            s = [
+                x for x in [
+                    neighbours(
+                        a,
+                        b) for (
+                        a,
+                        b) in neighs] if len(x) > 0]
+            count += len(s)
+
+        # divide by 4 because for every diamond the increment will be 4
+        return count // 2
+
     def process_action(b, action: Action) -> List[Hexagon]:
         coords = (action.r, action.q)
         changed = [Hexagon(action.r, action.q, action.player)]
@@ -160,15 +223,15 @@ class Board:
 
     def neighbours(self, piece: Hexagon, filter: Callable[[
             Hexagon], bool] = lambda
-            x: x.color == "") -> [Hexagon]:
+            x: x.color == "") -> {Hexagon}:
         """
         neighbours returns a list of Hexagons that exist within the board
         that don't already have a color.
         """
-        return [self.piece(*(piece + a).coords) for a in
+        return {self.piece(*(piece + a).coords) for a in
                 direction_vectors() if
                 self.valid(piece + a) and
-                filter(self.piece(*(piece + a).coords))]
+                filter(self.piece(*(piece + a).coords))}
 
     def __copy__(self):
         newboard = Board(self.n)

@@ -96,5 +96,32 @@ def testplayer2():
     ps.print_stats()
     print(s.getvalue())
 
+
+def testtriangle():
+    pl = player.Player("red", 4)
+    pl.turn("red", ("PLACE", 1, 0))
+    pl.turn("red", ("PLACE", 2, 0))
+    pl.turn("red", ("PLACE", 1, 1))
+    pl.turn("red", ("PLACE", 0, 2))
+    pl.turn("red", ("PLACE", 1, 2))
+    util.print_board(*pl.board.dict())
+    print(pl.board.triangles("red"))
+
+
+def testdiamon():
+    pl = player.Player("red", 4)
+    pl.turn("red", ("PLACE", 1, 0))
+    pl.turn("red", ("PLACE", 2, 0))
+    pl.turn("red", ("PLACE", 1, 1))
+    pl.turn("red", ("PLACE", 0, 1))
+
+    pl.turn("red", ("PLACE", 1, 3))
+    pl.turn("red", ("PLACE", 2, 2))
+    pl.turn("red", ("PLACE", 2, 3))
+    pl.turn("red", ("PLACE", 3, 2))
+    util.print_board(*pl.board.dict())
+    print(pl.board.diamonds("red"))
+
+
 # if __name__ == '__main__':
 #     testplayer2()
