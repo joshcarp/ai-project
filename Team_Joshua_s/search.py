@@ -54,7 +54,7 @@ class Hexagon:
         return f"({self.coords[0]},{self.coords[1]})"
 
     def __eq__(self, other):
-        return self.coords == other.coords and self.color == other.color
+        return hash(self) == hash(other)
 
     def __hash__(self):
         return hash(self.coords)
@@ -307,8 +307,10 @@ class Board:
         closed: List[Hexagon] = []
         opened: List[Hexagon] = [current]
         current.total_cost = 0
-
+        seen = set()
+        counter = 0
         while current.coords != end.coords:
+            counter += 1
             opened.sort(
                 key=lambda x: x.distance(end) + x.total_cost,
                 reverse=True
@@ -316,7 +318,10 @@ class Board:
             if len(opened) == 0:
                 return 0
             current = opened.pop()
-            print(current)
+            print(counter, current)
+            if current in seen:
+                raise Exception
+            seen.add(current)
             closed.append(current)
             for neigh in self.neighbours(current):
                 # neigh_path_cost is the cost to get to the neighbour
