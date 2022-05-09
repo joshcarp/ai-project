@@ -60,12 +60,6 @@ class Player:
         self.board = self.board.action(action)
 
 
-def next_player(current: str) -> str:
-    if current == "red":
-        return "blue"
-    return "red"
-
-
 def action(our: str, player: str, board: search.Board, depth: int, a: float,
            b: float):
     if depth == 0:
@@ -74,7 +68,7 @@ def action(our: str, player: str, board: search.Board, depth: int, a: float,
     for pieces in board.filter_pieces(lambda x: x.color == ""):
         act = search.Action(player, "PLACE", *pieces.coords)
         terminal = action(our,
-                          next_player(player),
+                          search.next_player(player),
                           board.action(act),
                           depth - 1,
                           a,

@@ -1,4 +1,5 @@
 import math
+import sys
 from collections import namedtuple
 from copy import copy
 from math import inf
@@ -35,7 +36,7 @@ class Hexagon:
 
     def incr_cost(self, player: str) -> float:
         if self.color == player:
-            return 0
+            return sys.float_info.epsilon
         if self.color == "":
             return 1
         return math.inf
@@ -111,6 +112,7 @@ class Board:
     n: int
     last_action: Action = None
 
+    # TODO: @joshcarp delete this
     def pieces(self) -> List[List[Hexagon]]:
         pieces: List[List[Hexagon]] = []
         for i in range(self.n):
@@ -228,11 +230,29 @@ class Board:
         # divide by 4 because for every diamond the increment will be 4
         return count // 2
 
+    def start_end_line(self, color: str):
+        if color == "red":
+            bottom = [self.piece(0, i) for i in range(0, self.n)]
+            top = [self.piece(self.n - 1, i) for i in range(0, self.n)]
+            return top, bottom
+        if color == "blue":
+            left = [self.piece(i, 0) for i in range(0, self.n)]
+            right = [self.piece(i, self.n - 1) for i in range(0, self.n)]
+            return left, right
+
     def distance_to_win(self, color: str) -> int:
         """
         returns the number of tiles color has to until a connection is made
         :return:
         """
+        start_line, end_line = self.start_end_line(color)
+        distances = []
+        for start in start_line:
+            for end in end_line:
+                path = self.a_star(color, start, end)
+                if path != []:
+                    distances.append(len(path))
+        return min(distances)
 
     def process_action(b, action: Action) -> List[Hexagon]:
         coords = (action.r, action.q)
@@ -280,7 +300,7 @@ class Board:
 
     def neighbours(self, piece: Hexagon, filter: Callable[[
             Hexagon], bool] = lambda
-            x: x.color == "") -> {Hexagon}:
+            x: x.color == "") -> [Hexagon]:
         """
         neighbours returns a list of Hexagons that exist within the board
         that don't already have a color.
@@ -292,9 +312,9 @@ class Board:
                 filter(self.piece(*(piece + a).coords))]
 
     def a_star(
-        self, player: str, start: (
-            int, int), end: (
-            int, int)) -> [Hexagon]:
+            self, player: str, start: (
+                int, int), end: (
+                int, int)) -> ([Hexagon], int):
         """
         a_star implements the a star algorithm and returns the path
         from start to end. the start Hexagon will be return[0] and
@@ -311,10 +331,11 @@ class Board:
                 reverse=True
             )
             if len(opened) == 0:
-                return 0
+                return [], math.inf
             current = opened.pop()
             closed.append(current)
-            for neigh in self.neighbours(current):
+            for neigh in self.neighbours(
+                    current, lambda x: x.color != next_player(player)):
                 # neigh_path_cost is the cost to get to the neighbour
                 # from the current node
                 neigh_path_cost = current.total_cost + \
@@ -340,9 +361,10 @@ class Board:
                     opened.append(neigh)
         # current at this point is goal, so traverse back to start and return
         # the list
+        total_cost = round(current.total_cost + current.incr_cost(player))
         path = current.get_path(self.piece(*start))
         self.filter_pieces(lambda x: x.reset_search() is None)
-        return path
+        return path, total_cost
 
     def __copy__(self):
         newboard = Board(self.n)
@@ -351,3 +373,9 @@ class Board:
             for j in range(self.n):
                 newboard.mutations[i][j] = self.mutations[i][j].copy()
         return newboard
+
+
+def next_player(current: str) -> str:
+    if current == "red":
+        return "blue"
+    return "red"
