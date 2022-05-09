@@ -64,20 +64,22 @@ class Hexagon:
         return Hexagon(self.coords[0] + other.coords[0],
                        self.coords[1] + other.coords[1])
 
-    def get_path(self, start=None) -> List[Hexagon]:
+    def get_path(self, start=None, player="") -> (List[Hexagon], int):
         """
         get_path traverses from the end node back to the start node
         and returns an in order list of the path.
         """
         elems: List[Hexagon] = []
         current = self
+        cost = 0
         while current is not None:
             elems.append(current)
+            cost += current.incr_cost(player)
             current = current.previous
         elems.reverse()
         if start is not None and elems[0] != start:
             raise Exception
-        return elems
+        return elems, cost
 
     def distance(self, othr) -> int:
         """
@@ -249,10 +251,9 @@ class Board:
         distances = []
         for start in start_line:
             for end in end_line:
-                path = self.a_star(color, start, end)
-                if path != []:
-                    distances.append(len(path))
-        return min(distances)
+                path, cost = self.a_star(color, start.coords, end.coords)
+                distances.append((path, cost))
+        return min(distances, key=lambda x: x[1])
 
     def process_action(b, action: Action) -> List[Hexagon]:
         coords = (action.r, action.q)
@@ -361,10 +362,17 @@ class Board:
                     opened.append(neigh)
         # current at this point is goal, so traverse back to start and return
         # the list
-        total_cost = round(current.total_cost + current.incr_cost(player))
-        path = current.get_path(self.piece(*start))
-        self.filter_pieces(lambda x: x.reset_search() is None)
-        return path, total_cost
+        path: List[Hexagon] = []
+        cost = 0
+        while current is not None:
+            path.append(current)
+            cost += current.incr_cost(player)
+            current = current.previous
+        path.reverse()
+        if start is not None and path[0] != start:
+            raise Exception
+        self.filter_pieces(lambda x: x.reset_search())
+        return path, round(cost)
 
     def __copy__(self):
         newboard = Board(self.n)

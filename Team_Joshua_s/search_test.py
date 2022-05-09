@@ -111,7 +111,7 @@ def testtriangle():
     print(pl.board.triangles("red"))
 
 
-def testdiamon():
+def testdiamond():
     pl = player.Player("red", 4)
     pl.turn("red", ("PLACE", 1, 0))
     pl.turn("red", ("PLACE", 2, 0))
@@ -130,7 +130,7 @@ def testdiamon():
 #     testplayer2()
 
 
-def testsquare():
+def test_a_star():
     board = search.Board(5)
     board = board.action(search.Action("blue", "PLACE", 1, 0))
     board = board.action(search.Action("blue", "PLACE", 1, 1))
@@ -146,7 +146,7 @@ def testsquare():
     assert cost == 8
 
 
-def testsquare2():
+def test_a_star_shortcut():
     board = search.Board(5)
     board = board.action(search.Action("blue", "PLACE", 1, 0))
     board = board.action(search.Action("blue", "PLACE", 1, 1))
@@ -163,3 +163,15 @@ def testsquare2():
     assert cost == 0
 
     assert path2 == path1
+
+
+def test_distance_to_win():
+    board = search.Board(5)
+    board = board.action(search.Action("blue", "PLACE", 1, 0))
+    board = board.action(search.Action("blue", "PLACE", 1, 1))
+    board = board.action(search.Action("blue", "PLACE", 1, 3))
+    board = board.action(search.Action("blue", "PLACE", 3, 2))
+    print(board)
+    path2, cost = board.a_star("blue", (1, 0), (1, 4))
+    print(path2, cost)
+    print(board.distance_to_win("blue"))
