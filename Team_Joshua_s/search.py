@@ -293,6 +293,18 @@ class Board:
                 self.valid(piece + a) and
                 filter(self.piece(*(piece + a).coords))}
 
+    def neighbours_list(self, piece: Hexagon, filter: Callable[[
+            Hexagon], bool] = lambda
+            x: x.color == "") -> {Hexagon}:
+        """
+        neighbours returns a list of Hexagons that exist within the board
+        that don't already have a color.
+        """
+        return [self.piece(*(piece + a).coords) for a in
+                direction_vectors() if
+                self.valid(piece + a) and
+                filter(self.piece(*(piece + a).coords))]
+
     def a_star(
         self, player: str, start: (
             int, int), end: (
@@ -323,7 +335,7 @@ class Board:
                 raise Exception
             seen.add(current)
             closed.append(current)
-            for neigh in self.neighbours(current):
+            for neigh in self.neighbours_list(current):
                 # neigh_path_cost is the cost to get to the neighbour
                 # from the current node
                 neigh_path_cost = current.total_cost + \
