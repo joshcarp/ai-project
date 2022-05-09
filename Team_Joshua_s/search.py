@@ -308,8 +308,6 @@ class Board:
         closed: List[Hexagon] = []
         opened: List[Hexagon] = [current]
         current.total_cost = 0
-        seen = set()
-        counter = 0
         while current.coords != end.coords:
             counter += 1
             opened.sort(
@@ -319,10 +317,6 @@ class Board:
             if len(opened) == 0:
                 return 0
             current = opened.pop()
-            print(counter, current)
-            if current in seen:
-                raise Exception
-            seen.add(current)
             closed.append(current)
             for neigh in self.neighbours(current):
                 # neigh_path_cost is the cost to get to the neighbour
