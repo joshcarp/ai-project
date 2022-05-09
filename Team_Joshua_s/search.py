@@ -319,7 +319,6 @@ class Board:
             print(current)
             closed.append(current)
             for neigh in self.neighbours(current):
-                print(neigh)
                 # neigh_path_cost is the cost to get to the neighbour
                 # from the current node
                 neigh_path_cost = current.total_cost + \

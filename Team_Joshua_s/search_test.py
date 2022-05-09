@@ -137,6 +137,7 @@ def testsquare():
     board = board.action(search.Action("blue", "PLACE", 1, 1))
     board = board.action(search.Action("blue", "PLACE", 1, 3))
     board = board.action(search.Action("blue", "PLACE", 3, 2))
+    print(board)
     solution = board.a_star("red", (4, 2), (0, 0))
     assert len(solution) == 8
 
