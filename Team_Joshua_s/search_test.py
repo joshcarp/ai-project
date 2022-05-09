@@ -1,9 +1,12 @@
+import cProfile
+import io
+import pstats
+
 import Team_Joshua_s.player as player
 import Team_Joshua_s.search as search
 import Team_Joshua_s.util as util
-import cProfile
-import pstats
-import io
+
+
 # from pstats import SortKey
 
 
@@ -58,6 +61,7 @@ def testplayer():
     assert pl.board.piece(2, 0).color == ""
     util.print_board(*pl.board.dict())
     assert player.evaluate(pl.board, "red") == -2
+
 
 # @profile
 
@@ -125,3 +129,23 @@ def testdiamon():
 
 # if __name__ == '__main__':
 #     testplayer2()
+
+
+def testsquare():
+    board = search.Board(5)
+    board = board.action(search.Action("blue", "PLACE", 1, 0))
+    board = board.action(search.Action("blue", "PLACE", 1, 1))
+    board = board.action(search.Action("blue", "PLACE", 1, 3))
+    board = board.action(search.Action("blue", "PLACE", 3, 2))
+    print(board)
+    expected = """8
+(4,2)
+(4,1)
+(3,1)
+(2,1)
+(1,2)
+(0,2)
+(0,1)
+(0,0)"""
+    solution = board.a_star("red", (4, 2), (0, 0))
+    assert solution == 8

@@ -1,3 +1,4 @@
+import math
 from collections import namedtuple
 from copy import copy
 from math import inf
@@ -8,6 +9,8 @@ from Team_Joshua_s import util
 Action = namedtuple('Action', 'player type r q')
 Action.__new__.__defaults__ = (None,) * len(Action._fields)
 
+class Hexagon:
+    pass
 
 class Hexagon:
     """
@@ -20,12 +23,20 @@ class Hexagon:
     # color represents the color that this node is as a string.
     color: str = ""
 
+    previous: Union[Hexagon, None] = None
+
     def __init__(self, i: int, j: int, color=None):
         self.coords = (i, j)
-        self.incr_cost = 1
         self.total_cost: Union[int, float] = inf
         if color is not None:
             self.color = color
+
+    def incr_cost(self, player: str) -> float:
+        if self.color == player:
+            return 0
+        if self.color == "":
+            return 1
+        return math.inf
 
     def r(self):
         return self.coords[0]
@@ -45,6 +56,33 @@ class Hexagon:
     def __add__(self, other):
         return Hexagon(self.coords[0] + other.coords[0],
                        self.coords[1] + other.coords[1])
+
+    def get_path(self) -> List[Hexagon]:
+        """
+        get_path traverses from the end node back to the start node
+        and returns an in order list of the path.
+        """
+        elems: List[Hexagon] = []
+        current = self
+        while current is not None:
+            elems.append(current)
+            current = current.previous
+        elems.reverse()
+        return elems
+
+    def distance(self, othr) -> int:
+        """
+        distance returns the amount of places from the current hexagon to
+        another hexagon.
+        The algorithm was adapted from
+        https://www.redblobgames.com/grids/hexagons/#distances
+        Copyright © 2022 Red Blob Games.
+        """
+        x = self.coords[0] - othr.coords[0]
+        xy = (self.coords[0] + self.coords[1]) - \
+             (othr.coords[0] + othr.coords[1])
+        y = self.coords[1] - othr.coords[1]
+        return (abs(x) + abs(xy) + abs(y)) / 2
 
 
 def direction_vectors() -> List[Hexagon]:
@@ -177,6 +215,17 @@ class Board:
         # divide by 4 because for every diamond the increment will be 4
         return count // 2
 
+    def distance_to_win(self, color: str) -> int:
+        """
+        returns the number of tiles color has to until a connection is made
+        :return:
+        """
+
+
+
+
+
+
     def process_action(b, action: Action) -> List[Hexagon]:
         coords = (action.r, action.q)
         changed = [Hexagon(action.r, action.q, action.player)]
@@ -232,6 +281,53 @@ class Board:
                 direction_vectors() if
                 self.valid(piece + a) and
                 filter(self.piece(*(piece + a).coords))}
+
+    def a_star(self, player: str, start: (int, int), end: (int, int)) -> int:
+        """
+        a_star implements the a star algorithm and returns the path
+        from start to end. the start Hexagon will be return[0] and
+        the end hexagon will be return[-1].
+        """
+        current = self.piece(*start)
+        closed: List[Hexagon] = []
+        opened: List[Hexagon] = [current]
+        current.total_cost = 0
+        while current.coords != end:
+            opened.sort(
+                key=lambda x: x.distance(self.piece(*start)) + x.total_cost,
+                reverse=True
+            )
+            if len(opened) == 0:
+                return 0
+            current = opened.pop()
+            closed.append(current)
+            for neigh in self.neighbours(current):
+                # neigh_path_cost is the cost to get to the neighbour
+                # from the current node
+                neigh_path_cost = current.total_cost + neigh.incr_cost(player)
+                # if the neighbours already existing cost is less than
+                # the current node then the current nodes previous
+                # becomes the neighbour
+                print(neigh, closed, neigh in closed)
+                if neigh.total_cost < neigh_path_cost and neigh in closed:
+                    current.total_cost = neigh.total_cost + current.incr_cost(player)
+                    current.previous = neigh
+                # if the neighbours total existing cost is more than getting
+                # to the neighbour through the current node then set
+                # neighbours previous to the current node
+                elif neigh.total_cost > neigh_path_cost and neigh in opened:
+                    neigh.total_cost = neigh_path_cost
+                    neigh.previous = current
+                # if neighbour is not in open then we will add it to be
+                # expanded next iteration
+                if neigh not in closed and neigh not in opened:
+                    neigh.total_cost = neigh_path_cost
+                    opened.append(neigh)
+        # current at this point is goal, so traverse back to start and return
+        # the list
+        path = current.get_path()
+        return len(path)
+
 
     def __copy__(self):
         newboard = Board(self.n)
