@@ -9,8 +9,10 @@ from Team_Joshua_s import util
 Action = namedtuple('Action', 'player type r q')
 Action.__new__.__defaults__ = (None,) * len(Action._fields)
 
+
 class Hexagon:
     pass
+
 
 class Hexagon:
     """
@@ -37,6 +39,10 @@ class Hexagon:
         if self.color == "":
             return 1
         return math.inf
+
+    def reset_search(self):
+        self.previous = None
+        self.total_cost = math.inf
 
     def r(self):
         return self.coords[0]
@@ -138,16 +144,24 @@ class Board:
         pieces = []
         for i in range(self.n):
             for j in range(self.n):
-                hex = Hexagon(i, j, self.mutations[i][j][-1].color)
+                hex = self.mutations[i][j][-1]
                 if filter(hex):
                     pieces.append(hex)
+        return pieces
+
+    def apply(self, apply: Callable[[Hexagon], None] = lambda x: True):
+        pieces = []
+        for i in range(self.n):
+            for j in range(self.n):
+                hex = self.mutations[i][j][-1]
+                apply(hex)
         return pieces
 
     def piece(self, x: int, y: int) -> Hexagon:
         """
         piece returns the Hexagon at coordinates (x, y)
         """
-        return Hexagon(x, y, self.mutations[x][y][-1].color)
+        return self.mutations[x][y][-1]
 
     def valid(self, piece: Hexagon) -> bool:
         """
@@ -155,7 +169,7 @@ class Board:
         and False otherwise.
         """
         return piece.coords[0] in range(0, self.n) and \
-            piece.coords[1] in range(0, self.n)
+               piece.coords[1] in range(0, self.n)
 
     def triangles(self, color: str) -> int:
         """
@@ -192,7 +206,7 @@ class Board:
             pieceneighs = self.neighbours(piece, color_filter)
             neighs = {frozenset({p, q}) for p in pieceneighs for q in
                       pieceneighs if p in self.neighbours(
-                q, color_filter) and q in self.neighbours(p, color_filter)}
+                    q, color_filter) and q in self.neighbours(p, color_filter)}
 
             def neighbours(one, two):
                 intersection = self.neighbours(
@@ -220,11 +234,6 @@ class Board:
         returns the number of tiles color has to until a connection is made
         :return:
         """
-
-
-
-
-
 
     def process_action(b, action: Action) -> List[Hexagon]:
         coords = (action.r, action.q)
@@ -271,16 +280,16 @@ class Board:
         return cpy
 
     def neighbours(self, piece: Hexagon, filter: Callable[[
-            Hexagon], bool] = lambda
+                                                              Hexagon], bool] = lambda
             x: x.color == "") -> {Hexagon}:
         """
         neighbours returns a list of Hexagons that exist within the board
         that don't already have a color.
         """
-        return {self.piece(*(piece + a).coords) for a in
+        return [self.piece(*(piece + a).coords) for a in
                 direction_vectors() if
                 self.valid(piece + a) and
-                filter(self.piece(*(piece + a).coords))}
+                filter(self.piece(*(piece + a).coords))]
 
     def a_star(self, player: str, start: (int, int), end: (int, int)) -> int:
         """
@@ -289,12 +298,14 @@ class Board:
         the end hexagon will be return[-1].
         """
         current = self.piece(*start)
+        end = self.piece(*end)
         closed: List[Hexagon] = []
         opened: List[Hexagon] = [current]
         current.total_cost = 0
-        while current.coords != end:
+
+        while current.coords != end.coords:
             opened.sort(
-                key=lambda x: x.distance(self.piece(*start)) + x.total_cost,
+                key=lambda x: x.distance(end) + x.total_cost,
                 reverse=True
             )
             if len(opened) == 0:
@@ -308,9 +319,9 @@ class Board:
                 # if the neighbours already existing cost is less than
                 # the current node then the current nodes previous
                 # becomes the neighbour
-                print(neigh, closed, neigh in closed)
                 if neigh.total_cost < neigh_path_cost and neigh in closed:
-                    current.total_cost = neigh.total_cost + current.incr_cost(player)
+                    current.total_cost = neigh.total_cost + current.incr_cost(
+                        player)
                     current.previous = neigh
                 # if the neighbours total existing cost is more than getting
                 # to the neighbour through the current node then set
@@ -326,8 +337,8 @@ class Board:
         # current at this point is goal, so traverse back to start and return
         # the list
         path = current.get_path()
-        return len(path)
-
+        self.filter_pieces(lambda x: x.reset_search() is None)
+        return path
 
     def __copy__(self):
         newboard = Board(self.n)
