@@ -25,11 +25,11 @@ class Hexagon:
     # color represents the color that this node is as a string.
     color: str = ""
 
-    previous: Union[Hexagon, None] = None
+    __previous__: Union[Hexagon, None] = None
 
     def __init__(self, i: int, j: int, color=None):
         self.coords = (i, j)
-        self.total_cost: Union[int, float] = inf
+        self.__total_cost__: Union[int, float] = inf
         if color is not None:
             self.color = color
 
@@ -41,8 +41,8 @@ class Hexagon:
         return math.inf
 
     def reset_search(self):
-        self.previous = None
-        self.total_cost = math.inf
+        self.__previous__ = None
+        self.__total_cost__ = math.inf
 
     def r(self):
         return self.coords[0]
@@ -72,7 +72,7 @@ class Hexagon:
         current = self
         while current is not None:
             elems.append(current)
-            current = current.previous
+            current = current.__previous__
         elems.reverse()
         return elems
 
@@ -291,7 +291,7 @@ class Board:
                 self.valid(piece + a) and
                 filter(self.piece(*(piece + a).coords))]
 
-    def a_star(self, player: str, start: (int, int), end: (int, int)) -> int:
+    def a_star(self, player: str, start: (int, int), end: (int, int)) -> [Hexagon]:
         """
         a_star implements the a star algorithm and returns the path
         from start to end. the start Hexagon will be return[0] and
@@ -301,11 +301,11 @@ class Board:
         end = self.piece(*end)
         closed: List[Hexagon] = []
         opened: List[Hexagon] = [current]
-        current.total_cost = 0
+        current.__total_cost__ = 0
 
         while current.coords != end.coords:
             opened.sort(
-                key=lambda x: x.distance(end) + x.total_cost,
+                key=lambda x: x.distance(end) + x.__total_cost__,
                 reverse=True
             )
             if len(opened) == 0:
@@ -315,24 +315,24 @@ class Board:
             for neigh in self.neighbours(current):
                 # neigh_path_cost is the cost to get to the neighbour
                 # from the current node
-                neigh_path_cost = current.total_cost + neigh.incr_cost(player)
+                neigh_path_cost = current.__total_cost__ + neigh.incr_cost(player)
                 # if the neighbours already existing cost is less than
                 # the current node then the current nodes previous
                 # becomes the neighbour
-                if neigh.total_cost < neigh_path_cost and neigh in closed:
-                    current.total_cost = neigh.total_cost + current.incr_cost(
+                if neigh.__total_cost__ < neigh_path_cost and neigh in closed:
+                    current.__total_cost__ = neigh.__total_cost__ + current.incr_cost(
                         player)
-                    current.previous = neigh
+                    current.__previous__ = neigh
                 # if the neighbours total existing cost is more than getting
                 # to the neighbour through the current node then set
                 # neighbours previous to the current node
-                elif neigh.total_cost > neigh_path_cost and neigh in opened:
-                    neigh.total_cost = neigh_path_cost
-                    neigh.previous = current
+                elif neigh.__total_cost__ > neigh_path_cost and neigh in opened:
+                    neigh.__total_cost__ = neigh_path_cost
+                    neigh.__previous__ = current
                 # if neighbour is not in open then we will add it to be
                 # expanded next iteration
                 if neigh not in closed and neigh not in opened:
-                    neigh.total_cost = neigh_path_cost
+                    neigh.__total_cost__ = neigh_path_cost
                     opened.append(neigh)
         # current at this point is goal, so traverse back to start and return
         # the list
