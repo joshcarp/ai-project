@@ -4,7 +4,6 @@ import pstats
 
 import Team_Joshua_s.player as player
 import Team_Joshua_s.search as search
-import Team_Joshua_s.util as util
 
 
 # from pstats import SortKey
@@ -40,16 +39,16 @@ def testneighbours():
 def testplayer():
     pl = player.Player("red", 4)
     pl.turn("red", ("PLACE", 1, 0))
-    util.print_board(*pl.board.dict())
+    print(pl.board)
     assert pl.board.piece(1, 0).color == "red"
     pl.turn("blue", ("STEAL",))
     assert pl.board.piece(1, 0).color == "blue"
-    util.print_board(*pl.board.dict())
+    print(pl.board)
     pl.turn("blue", ("PLACE", 1, 1))
     pl.turn("red", ("PLACE", 0, 1))
-    util.print_board(*pl.board.dict())
+    print(pl.board)
     pl.turn("red", ("PLACE", 2, 0))
-    util.print_board(*pl.board.dict())
+    print(pl.board)
     assert pl.board.piece(0, 1).color == "red"
     assert pl.board.piece(2, 0).color == "red"
     assert pl.board.piece(1, 0).color == ""
@@ -59,7 +58,7 @@ def testplayer():
     pl.turn("blue", ("PLACE", 1, 1))
     assert pl.board.piece(0, 1).color == ""
     assert pl.board.piece(2, 0).color == ""
-    util.print_board(*pl.board.dict())
+    print(pl.board)
     assert player.evaluate(pl.board, "red") == -2
 
 
@@ -77,7 +76,7 @@ def testplayer2():
         print(act)
         pl.turn(pl.player, act)
         pl2.turn(pl.player, act)
-        util.print_board(*pl.board.dict())
+        print(pl.board)
         print("red: ", len(pl.board.filter_pieces(lambda x: x.color == "red")))
         print("blue: ",
               len(pl.board.filter_pieces(lambda x: x.color == "blue")))
@@ -85,7 +84,7 @@ def testplayer2():
         print(act)
         pl.turn(pl2.player, act)
         pl2.turn(pl2.player, act)
-        util.print_board(*pl.board.dict())
+        print(pl.board)
 
         print("red: ", len(pl.board.filter_pieces(lambda x: x.color == "red")))
         print("blue: ",
@@ -108,7 +107,7 @@ def testtriangle():
     pl.turn("red", ("PLACE", 1, 1))
     pl.turn("red", ("PLACE", 0, 2))
     pl.turn("red", ("PLACE", 1, 2))
-    util.print_board(*pl.board.dict())
+    print(pl.board)
     print(pl.board.triangles("red"))
 
 
@@ -123,7 +122,7 @@ def testdiamon():
     pl.turn("red", ("PLACE", 2, 2))
     pl.turn("red", ("PLACE", 2, 3))
     pl.turn("red", ("PLACE", 3, 2))
-    util.print_board(*pl.board.dict())
+    print(pl.board)
     print(pl.board.diamonds("red"))
 
 

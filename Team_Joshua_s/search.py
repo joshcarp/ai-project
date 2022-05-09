@@ -131,15 +131,12 @@ class Board:
                 self.mutations[i].append([Hexagon(i, j)])
 
     def __repr__(self):
-        return util.board_string(*self.dict())
-
-    def dict(self) -> (int, {}):
         d: {} = {}
         for list in self.pieces():
             for e in list:
                 if e.color != "":
                     d[e.coords] = e.color
-        return self.n, d
+        return util.board_string(self.n, d)
 
     def filter_pieces(self,
                       filter: Callable[[Hexagon], bool] = lambda x: True):
