@@ -7,7 +7,7 @@ class Player:
     player: str = ""
     board: search.Board = None
     plays: search.List[search.Action] = []
-    depth: int = 4
+    depth: int = 2
     dumb: bool = False
 
     def __init__(self, player: str, n: int, depth: int = None, dumb=False):
@@ -38,7 +38,7 @@ class Player:
                      -math.inf, math.inf)
         if self.board.piece(act[1].r, act[1].q).color != "":
             raise Exception
-        return ("PLACE", act[1].r, act[1].q)
+        return act[1]
 
     def turn(self, player, action):
         """
@@ -58,6 +58,12 @@ class Player:
         self.board = self.board.action(action)
 
 
+def next_player(current: str) -> str:
+    if current == "red":
+        return "blue"
+    return "red"
+
+
 def action(our: str, player: str, board: search.Board, depth: int, a: float,
            b: float):
     if depth == 0:
@@ -65,10 +71,9 @@ def action(our: str, player: str, board: search.Board, depth: int, a: float,
     max_score, min_score = (-math.inf, None), (math.inf, None)
     for pieces in board.filter_pieces(lambda x: x.color == ""):
         act = search.Action(player, "PLACE", *pieces.coords)
-        newboard = board.action(act)
         terminal = action(our,
-                          search.next_player(player),
-                          newboard,
+                          next_player(player),
+                          board.action(act),
                           depth - 1,
                           a,
                           b)
@@ -86,8 +91,49 @@ def action(our: str, player: str, board: search.Board, depth: int, a: float,
     return min_score
 
 
-def evaluate(board: search.Board, color: str) -> float:
-    _, distance = board.distance_to_win(color)
-    if distance == 0:
-        return math.inf
-    return 1 / distance
+def evaluate(board: search.Board, color: str) -> int:
+    utility = 0
+    tri_weightage = 3
+    diam_weightage = 4
+    adj_weightage = 1
+    for i in range(board.n):
+        for j in range(board.n):
+            mutation = board.mutations[i][j][-1]
+            if mutation.color == color:
+                utility += 1
+            elif mutation.color != color and mutation.color != "":
+                utility -= 1
+
+    tri_count = 0
+    if color == "red":
+        tri_count += board.triangles(color)
+        tri_count -= board.triangles("blue")
+    elif color == "blue":
+        tri_count += board.triangles(color)
+        tri_count -= board.triangles("red")
+
+    utility += tri_count * tri_weightage
+
+    diam_count = 0
+    if color == "red":
+        diam_count += board.diamonds(color)
+        diam_count -= board.diamonds("blue")
+    elif color == "blue":
+        diam_count += board.diamonds(color)
+        diam_count -= board.diamonds("red")
+
+    utility += diam_count * diam_weightage
+
+    adj_count = 0
+    if color == "red":
+        adj_count += board.adjacent(color)
+        adj_count -= board.adjacent("blue")
+    elif color == "blue":
+        adj_count += board.adjacent(color)
+        adj_count -= board.adjacent("red")
+
+    utility += adj_count * adj_weightage
+
+    # board.double_bridge("")
+
+    return utility

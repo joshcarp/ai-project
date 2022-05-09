@@ -104,7 +104,13 @@ def direction_vectors() -> List[Hexagon]:
     return [Hexagon(+1, 0), Hexagon(+1, -1), Hexagon(0, -1),
             Hexagon(-1, 0), Hexagon(-1, +1), Hexagon(0, +1)]
 
-
+def direction_vectors2() -> List[Hexagon]:
+    """
+    direction_vectors2 returns vectors representing all the 6 hexagons from any
+    given hexagon that will form a double bridge.
+    """
+    return [Hexagon(2, -1), Hexagon(1, -2), Hexagon(-1, -1),
+            Hexagon(-2, -1), Hexagon(-1, -2), Hexagon(1, 1)]
 class Board:
     """
     Board controls all the information about the state and implements the
@@ -224,6 +230,41 @@ class Board:
         # divide by 4 because for every diamond the increment will be 4
         return count // 2
 
+    def adjacent(self, color: str) -> int:
+        """
+        adjacent returns the number of adjacents of a particular color
+        in the board
+        """
+        def color_filter(x):
+            return x.color == color
+
+        count = 0
+        adj_list = []
+        for piece in self.filter_pieces(color_filter):
+            pieceneighs = self.neighbours(piece, color_filter)
+            if len(pieceneighs) >= 1:
+                if [pieceneighs[0].coords, piece.coords] not in adj_list:
+                    adj_list.append([piece.coords, pieceneighs[0].coords])
+                    count += 1
+        # print(adj_list)
+        # print(count)
+        return count
+
+    def double_bridge(self, color: str) -> int:
+        """
+        double_bridge returns the number of double bridges of a particular color
+        in the board
+        """
+        def color_filter(x):
+            return x.color == color
+
+        count = 0
+        double_list = []
+        for piece in self.filter_pieces(color_filter):
+            pieceneighs = self.neighbours2(piece, color_filter)
+            for neigh in pieceneighs:
+                print(neigh.coords)
+
     def start_end_line(self, color: str):
         if color == "red":
             bottom = [
@@ -328,6 +369,18 @@ class Board:
         # would use a set here but set values are copies and not references
         return [self.piece(*(piece + a).coords) for a in
                 direction_vectors() if
+                self.valid(piece + a) and
+                filter(self.piece(*(piece + a).coords))]
+
+    def neighbours2(self, piece: Hexagon, filter: Callable[[
+            Hexagon], bool] = lambda
+            x: x.color == "") -> [Hexagon]:
+        """
+        neighbours2 returns a list for Hexagons that exist within the board
+        that matches double bridges
+        """
+        return [self.piece(*(piece + a).coords) for a in
+                direction_vectors2() if
                 self.valid(piece + a) and
                 filter(self.piece(*(piece + a).coords))]
 
