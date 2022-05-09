@@ -63,7 +63,7 @@ class Hexagon:
         return Hexagon(self.coords[0] + other.coords[0],
                        self.coords[1] + other.coords[1])
 
-    def get_path(self) -> List[Hexagon]:
+    def get_path(self, start=None) -> List[Hexagon]:
         """
         get_path traverses from the end node back to the start node
         and returns an in order list of the path.
@@ -74,6 +74,8 @@ class Hexagon:
             elems.append(current)
             current = current.__previous__
         elems.reverse()
+        if start is not None and elems[0] != start:
+            raise Exception
         return elems
 
     def distance(self, othr) -> int:
@@ -341,7 +343,7 @@ class Board:
                     opened.append(neigh)
         # current at this point is goal, so traverse back to start and return
         # the list
-        path = current.get_path()
+        path = current.get_path(self.piece(*start))
         self.filter_pieces(lambda x: x.reset_search() is None)
         return path
 
