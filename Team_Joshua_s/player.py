@@ -19,8 +19,6 @@ class Player:
         play as Red, or the string "blue" if your player will play
         as Blue.
         """
-        if player == "red":
-            dumb = True
         self.board = search.Board(n)
         self.player = player
         if depth is not None:
@@ -67,9 +65,10 @@ def action(our: str, player: str, board: search.Board, depth: int, a: float,
     max_score, min_score = (-math.inf, None), (math.inf, None)
     for pieces in board.filter_pieces(lambda x: x.color == ""):
         act = search.Action(player, "PLACE", *pieces.coords)
+        newboard = board.action(act)
         terminal = action(our,
                           search.next_player(player),
-                          board.action(act),
+                          newboard,
                           depth - 1,
                           a,
                           b)
@@ -87,13 +86,8 @@ def action(our: str, player: str, board: search.Board, depth: int, a: float,
     return min_score
 
 
-def evaluate(board: search.Board, color: str) -> int:
-    utility = 0
-    for i in range(board.n):
-        for j in range(board.n):
-            mutation = board.mutations[i][j][-1]
-            if mutation.color == color:
-                utility += 1
-            elif mutation.color != color and mutation.color != "":
-                utility -= 1
-    return utility
+def evaluate(board: search.Board, color: str) -> float:
+    _, distance = board.distance_to_win(color)
+    if distance == 0:
+        return math.inf
+    return 1 / distance

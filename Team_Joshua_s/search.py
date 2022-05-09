@@ -226,12 +226,37 @@ class Board:
 
     def start_end_line(self, color: str):
         if color == "red":
-            bottom = [self.piece(0, i) for i in range(0, self.n)]
-            top = [self.piece(self.n - 1, i) for i in range(0, self.n)]
+            bottom = [
+                x for x in [
+                    self.piece(
+                        0,
+                        i) for i in range(
+                        0,
+                        self.n)] if x.color != next_player(color)]
+            top = [
+                x for x in [
+                    self.piece(
+                        self.n - 1,
+                        i) for i in range(
+                        0,
+                        self.n)] if x.color != next_player(color)]
             return top, bottom
         if color == "blue":
-            left = [self.piece(i, 0) for i in range(0, self.n)]
-            right = [self.piece(i, self.n - 1) for i in range(0, self.n)]
+            left = [
+                x for x in [
+                    self.piece(
+                        i,
+                        0) for i in range(
+                        0,
+                        self.n)] if x.color != next_player(color)]
+            right = [
+                x for x in [
+                    self.piece(
+                        i,
+                        self.n -
+                        1) for i in range(
+                        0,
+                        self.n)] if x.color != next_player(color)]
             return left, right
 
     def distance_to_win(self, color: str) -> int:
@@ -245,6 +270,8 @@ class Board:
             for end in end_line:
                 path, cost = self.a_star(color, start.coords, end.coords)
                 distances.append((path, cost))
+        if len(distances) == 0:
+            return ([], math.inf)
         return min(distances, key=lambda x: x[1])
 
     def process_action(b, action: Action) -> List[Hexagon]:
