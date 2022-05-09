@@ -7,7 +7,7 @@ class Player:
     player: str = ""
     board: search.Board = None
     plays: search.List[search.Action] = []
-    depth: int = 2
+    depth: int = 4
     dumb: bool = False
 
     def __init__(self, player: str, n: int, depth: int = None, dumb=False):
@@ -19,6 +19,8 @@ class Player:
         play as Red, or the string "blue" if your player will play
         as Blue.
         """
+        if player == "red":
+            dumb = True
         self.board = search.Board(n)
         self.player = player
         if depth is not None:
@@ -38,7 +40,7 @@ class Player:
                      -math.inf, math.inf)
         if self.board.piece(act[1].r, act[1].q).color != "":
             raise Exception
-        return act[1]
+        return ("PLACE", act[1].r, act[1].q)
 
     def turn(self, player, action):
         """
