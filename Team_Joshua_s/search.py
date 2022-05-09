@@ -187,7 +187,7 @@ class Board:
         for piece in self.filter_pieces(color_filter):
             pieceneighs = self.neighbours(piece, color_filter)
             for neigh in pieceneighs:
-                neighneigh = self.neighbours(neigh, color_filter)
+                neighneigh = set(self.neighbours(neigh, color_filter))
                 if len(neighneigh.intersection(pieceneighs)) != 0:
                     count += 1
         # divide by 6 because for every triangle the increment will be 6
@@ -211,10 +211,10 @@ class Board:
                 q, color_filter) and q in self.neighbours(p, color_filter)}
 
             def neighbours(one, two):
-                intersection = self.neighbours(
-                    one, color_filter).intersection(
-                    self.neighbours(
-                        two, color_filter))
+                intersection = set(self.neighbours(
+                    one, color_filter)).intersection(
+                    set(self.neighbours(
+                        two, color_filter)))
                 if piece in intersection:
                     intersection.remove(piece)
                 return intersection
@@ -288,18 +288,7 @@ class Board:
         neighbours returns a list of Hexagons that exist within the board
         that don't already have a color.
         """
-        return {self.piece(*(piece + a).coords) for a in
-                direction_vectors() if
-                self.valid(piece + a) and
-                filter(self.piece(*(piece + a).coords))}
-
-    def neighbours_list(self, piece: Hexagon, filter: Callable[[
-            Hexagon], bool] = lambda
-            x: x.color == "") -> {Hexagon}:
-        """
-        neighbours returns a list of Hexagons that exist within the board
-        that don't already have a color.
-        """
+        # would use a set here but set values are copies and not references
         return [self.piece(*(piece + a).coords) for a in
                 direction_vectors() if
                 self.valid(piece + a) and
