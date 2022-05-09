@@ -174,4 +174,22 @@ def test_distance_to_win():
     print(board)
     path2, cost = board.a_star("blue", (1, 0), (1, 4))
     print(path2, cost)
-    print(board.distance_to_win("blue"))
+    path, dist = board.distance_to_win("blue")
+    print(path, dist)
+    assert dist == 2
+
+    board = board.action(search.Action("red", "PLACE", 2, 1))
+    print(board)
+    path, dist = board.distance_to_win("red")
+    print(path, dist)
+    assert dist == 4
+
+    board = board.action(search.Action("red", "PLACE", 1, 2))
+    print(board)
+    path, dist = board.a_star("red", (4, 2), (0, 0))
+    print(path, dist)
+    assert dist == 6
+
+    path, dist = board.distance_to_win("red")
+    print(path, dist)
+    assert dist == 3

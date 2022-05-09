@@ -64,7 +64,7 @@ class Hexagon:
         return Hexagon(self.coords[0] + other.coords[0],
                        self.coords[1] + other.coords[1])
 
-    def get_path(self, start=None, player="") -> (List[Hexagon], int):
+    def get_path(self, start=None, player="") -> [List[Hexagon], int]:
         """
         get_path traverses from the end node back to the start node
         and returns an in order list of the path.
@@ -150,14 +150,6 @@ class Board:
                 hex = self.mutations[i][j][-1]
                 if filter(hex):
                     pieces.append(hex)
-        return pieces
-
-    def apply(self, apply: Callable[[Hexagon], None] = lambda x: True):
-        pieces = []
-        for i in range(self.n):
-            for j in range(self.n):
-                hex = self.mutations[i][j][-1]
-                apply(hex)
         return pieces
 
     def piece(self, x: int, y: int) -> Hexagon:
@@ -325,7 +317,7 @@ class Board:
         end = self.piece(*end)
         closed: List[Hexagon] = []
         opened: List[Hexagon] = [current]
-        current.total_cost = 0
+        current.total_cost = current.incr_cost(player)
         while current.coords != end.coords:
             opened.sort(
                 key=lambda x: x.distance(end) + x.total_cost,
@@ -359,6 +351,7 @@ class Board:
                 # expanded next iteration
                 if neigh not in closed and neigh not in opened:
                     neigh.total_cost = neigh_path_cost
+                    neigh.previous = current
                     opened.append(neigh)
         # current at this point is goal, so traverse back to start and return
         # the list
