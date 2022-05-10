@@ -1,4 +1,5 @@
 import math
+import random
 
 import Team_Joshua_s.search as search
 
@@ -8,9 +9,9 @@ class Player:
     board: search.Board = None
     plays: search.List[search.Action] = []
     depth: int = 4
-    dumb: bool = False
+    random: bool = False
 
-    def __init__(self, player: str, n: int, depth: int = None, dumb=False):
+    def __init__(self, player: str, n: int, depth: int = None, random=False):
         """
         Called once at the beginning of a game to initialise this player.
         Set up an internal representation of the game state.
@@ -23,17 +24,18 @@ class Player:
         self.player = player
         if depth is not None:
             self.depth = depth
-        self.dumb = dumb
+        self.random = random
 
     def action(self):
         """
        Called at the beginning of your turn. Based on the current state
        of the game, select an action to play.
        """
-        if self.dumb:
-            return ("PLACE",
-                    *self.board.filter_pieces(lambda x: x.color == "")[
-                        0].coords)
+        if self.random:
+            valid_moves = self.board.filter_pieces(lambda x: x.color == "")
+            return (
+                "PLACE",
+                *valid_moves[random.randint(0, len(valid_moves) - 1)].coords)
         act = action(self.player, self.player, self.board, self.depth,
                      -math.inf, math.inf)
         if self.board.piece(act[1].r, act[1].q).color != "":
@@ -91,9 +93,9 @@ def action(our: str, player: str, board: search.Board, depth: int, a: float,
     return min_score
 
 
-def evaluate(board: search.Board, our: str, player: str) -> float:
+def distance_score(board: search.Board, our: str, player: str) -> float:
     score = 0
-    _, distance = board.distance_to_win(our)
+    distance = board.distance_to_win(our)[1]
     if distance == 1 and our == player:
         score = math.inf
     if distance == 0:
@@ -101,11 +103,24 @@ def evaluate(board: search.Board, our: str, player: str) -> float:
     else:
         score = 1 / distance
 
-    _, distance = board.distance_to_win(search.next_player(our))
+    distance = board.distance_to_win(search.next_player(our))[1]
     if distance == 1 and our != player:
         score -= math.inf
     if distance == 0:
         score -= math.inf
     else:
         score -= 1 / distance
+
     return score
+
+
+def evaluate(board: search.Board, our: str, player: str) -> float:
+    distance = distance_score(board, our, player)
+# distance = 0
+# triangles = board.triangles(our) - board.triangles(search.next_player(our))
+# diamonds = board.diamonds(our) - board.diamonds(search.next_player(our))
+# double_path = board.double_bridge(our) - board.double_bridge(
+#     search.next_player(our))
+# captures = board.capturable(our) - board.capturable(
+#     search.next_player(our))
+    return distance

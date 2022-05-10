@@ -1,4 +1,4 @@
-import math
+import time
 
 import Team_Joshua_s.player as player
 import Team_Joshua_s.search as search
@@ -62,45 +62,75 @@ def testplayer():
 
 # @profile
 
-def testplayer2():
+# pre hash: 1 passed in 162.28s (0:02:42)
+def testfoo():
+    print("hello")
+    pl = player.Player("red", 15, depth=1)
+    act = pl.action()
+    pl.turn(pl.player, act)
+    print(pl.board)
 
+
+def testa_star():
+    pl = player.Player("red", 15, depth=1)
+    start_line, end_line = pl.board.start_end_line(pl.player)
+    start = search.Hexagon(-1, -1)
+    start.custom_neighbours = start_line
+    start.color = "red"
+    end = search.Hexagon(15, 15)
+    start.color = "red"
+    end.custom_neighbours = end_line
+
+    for elem in end_line:
+        elem.custom_neighbours = [end]
+
+    s = pl.board.a_star("red", start, end)
+
+    print(s)
+
+
+def testplayer2():
     # pr = cProfile.Profile()
     # pr.enable()
-    pl = player.Player("red", 4, depth=2)
-    pl2 = player.Player("blue", 4, depth=2)
+    print("hello")
+    pl = player.Player("red", 10, depth=1)
+    # pl2 = player.Player("blue", 7, random=True)
 
-    for i in range(6):
+    for i in range(1):
         if i == 3:
             print()
+        start_time = time.time()
         act = pl.action()
         print(act)
         pl.turn(pl.player, act)
-        pl2.turn(pl.player, act)
-        print(pl.board)
-        print("red: ", len(pl.board.filter_pieces(lambda x: x.color == "red")))
-        print("blue: ",
-              len(pl.board.filter_pieces(lambda x: x.color == "blue")))
-        act = pl2.action()
-        print(act)
-        pl.turn(pl2.player, act)
-        pl2.turn(pl2.player, act)
-        print(pl.board)
+        print(time.time() - start_time)
+        # pl2.turn(pl.player, act)
 
-        print("red: ", len(pl.board.filter_pieces(lambda x: x.color == "red")))
-        print("blue: ",
-              len(pl.board.filter_pieces(lambda x: x.color == "blue")))
-        blank = pl.board.filter_pieces(lambda x: x.color == "")
-        if len(blank) <= 2:
-            break
-        if i == 3:
-            print()
-        if pl.board.distance_to_win("blue")[1] == 0:
-            print("blue is the winner")
-            break
-        if pl.board.distance_to_win("red")[1] == 0:
-            print("red is the winner")
-            break
-        print(i)
+        print(pl.board)
+# print("red: ", len(pl.board.filter_pieces(lambda x: x.color == "red")))
+# print("blue: ",
+#       len(pl.board.filter_pieces(lambda x: x.color == "blue")))
+# act = pl2.action()
+# print(act)
+# pl.turn(pl2.player, act)
+# pl2.turn(pl2.player, act)
+# print(pl.board)
+
+# print("red: ", len(pl.board.filter_pieces(lambda x: x.color == "red")))
+# print("blue: ",
+#       len(pl.board.filter_pieces(lambda x: x.color == "blue")))
+# blank = pl.board.filter_pieces(lambda x: x.color == "")
+# if len(blank) <= 2:
+#     break
+# if i == 3:
+#     print()
+# if pl.board.distance_to_win("blue")[1] == 0:
+#     print("blue is the winner")
+#     break
+# if pl.board.distance_to_win("red")[1] == 0:
+#     print("red is the winner")
+#     break
+# print(i)
 
     # pr.disable()
     # s = io.StringIO()
@@ -155,7 +185,7 @@ def testdouble_bridges():
     pl.turn("red", ("PLACE", 0, 1))
 
     print(pl.board)
-    print(pl.board.diamonds("red", ""))
+    print(pl.board.double_bridge("red"))
 
 
 # if __name__ == '__main__':
@@ -169,11 +199,11 @@ def test_a_star():
     board = board.action(search.Action("blue", "PLACE", 1, 3))
     board = board.action(search.Action("blue", "PLACE", 3, 2))
     print(board)
-    solution, cost = board.a_star("red", (4, 2), (0, 0))
+    solution, cost = board.a_star("red", board.piece(4, 2), board.piece(0, 0))
     assert len(solution) == 8
     assert cost == 8
 
-    solution, cost = board.a_star("red", (4, 2), (0, 0))
+    solution, cost = board.a_star("red", board.piece(4, 2), board.piece(0, 0))
     assert len(solution) == 8
     assert cost == 8
 
@@ -185,13 +215,13 @@ def test_a_star_shortcut():
     board = board.action(search.Action("blue", "PLACE", 1, 3))
     board = board.action(search.Action("blue", "PLACE", 3, 2))
     print(board)
-    path1, cost = board.a_star("red", (4, 2), (0, 0))
+    path1, cost = board.a_star("red", board.piece(4, 2), board.piece(0, 0))
     assert cost == 8
     for elem in path1:
         board = board.action(search.Action("red", "PLACE", *elem.coords))
     print(board)
 
-    path2, cost = board.a_star("red", (4, 2), (0, 0))
+    path2, cost = board.a_star("red", board.piece(4, 2), board.piece(0, 0))
     assert cost == 0
 
     assert path2 == path1
@@ -240,7 +270,8 @@ def test_evaluate():
 
 def test_distance_to_win_2():
     pl = player.Player("red", 4, depth=1)
-    path1, cost = pl.board.a_star("blue", (0, 0), (2, 2))
+    path1, cost = pl.board.a_star(
+        "blue", pl.board.piece(0, 0), pl.board.piece(2, 2))
 
     for elem in path1:
         pl.board = pl.board.action(
@@ -249,43 +280,64 @@ def test_distance_to_win_2():
     print(pl.board.distance_to_win("blue"))
 
 
-def test_distance_to_win():
-    board = search.Board(5)
+# def test_distance_to_win():
+#     board = search.Board(5)
+#     board = board.action(search.Action("blue", "PLACE", 1, 0))
+#     board = board.action(search.Action("blue", "PLACE", 1, 1))
+#     board = board.action(search.Action("blue", "PLACE", 1, 3))
+#     board = board.action(search.Action("blue", "PLACE", 3, 2))
+#     print(board)
+#     path2, cost = board.a_star("blue", (1, 0), (1, 4))
+#     print(path2, cost)
+#     path, dist = board.distance_to_win("blue")
+#     print(path, dist)
+#     assert dist == 2
+#
+#     board = board.action(search.Action("red", "PLACE", 2, 1))
+#     print(board)
+#     path, dist = board.distance_to_win("red")
+#     print(path, dist)
+#     assert dist == 4
+#
+#     board = board.action(search.Action("red", "PLACE", 1, 2))
+#     print(board)
+#     path, dist = board.a_star("red", (4, 2), (0, 0))
+#     print(path, dist)
+#     assert dist == 6
+#
+#     path, dist = board.distance_to_win("red")
+#     print(path, dist)
+#     assert dist == 3
+#     assert dist == board.min_dist_2("red")
+#
+#     board = board.action(search.Action("red", "PLACE", 0, 2))
+#     board = board.action(search.Action("red", "PLACE", 3, 1))
+#     board = board.action(search.Action("red", "PLACE", 4, 1))
+#
+#     path, dist = board.distance_to_win("red")
+#     print(path, dist)
+#     assert dist == 0
+#
+#     path, dist = board.distance_to_win("blue")
+#     print(path, dist)
+#     assert dist == math.inf
+#     assert dist == board.min_dist_2("blue")
+
+
+def tuple_to_dist(n: int, t: (int, int)) -> int:
+    return n * t[0] + t[1]
+
+
+def test_new_distance():
+    board = search.Board(2)
+    # board.foo("red")
+    a = board.distance_to_win("red")
+    print(board)
+    print(a)
     board = board.action(search.Action("blue", "PLACE", 1, 0))
-    board = board.action(search.Action("blue", "PLACE", 1, 1))
-    board = board.action(search.Action("blue", "PLACE", 1, 3))
-    board = board.action(search.Action("blue", "PLACE", 3, 2))
+    board = board.action(search.Action("blue", "PLACE", 1, 0))
+    board = board.action(search.Action("blue", "PLACE", 1, 0))
+
+    a = board.distance_to_win("red")
     print(board)
-    path2, cost = board.a_star("blue", (1, 0), (1, 4))
-    print(path2, cost)
-    path, dist = board.distance_to_win("blue")
-    print(path, dist)
-    assert dist == 2
-
-    board = board.action(search.Action("red", "PLACE", 2, 1))
-    print(board)
-    path, dist = board.distance_to_win("red")
-    print(path, dist)
-    assert dist == 4
-
-    board = board.action(search.Action("red", "PLACE", 1, 2))
-    print(board)
-    path, dist = board.a_star("red", (4, 2), (0, 0))
-    print(path, dist)
-    assert dist == 6
-
-    path, dist = board.distance_to_win("red")
-    print(path, dist)
-    assert dist == 3
-
-    board = board.action(search.Action("red", "PLACE", 0, 2))
-    board = board.action(search.Action("red", "PLACE", 3, 1))
-    board = board.action(search.Action("red", "PLACE", 4, 1))
-
-    path, dist = board.distance_to_win("red")
-    print(path, dist)
-    assert dist == 0
-
-    path, dist = board.distance_to_win("blue")
-    print(path, dist)
-    assert dist == math.inf
+    print(a)
