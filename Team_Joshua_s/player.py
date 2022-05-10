@@ -95,7 +95,7 @@ def action(our: str, player: str, board: search.Board, depth: int, a: float,
 
 def distance_score(board: search.Board, our: str, player: str) -> float:
     score = 0
-    distance = board.distance_to_win(our)[1]
+    foo, distance = board.distance_to_win(our)
     if distance == 1 and our == player:
         return math.inf
     if distance == 0:
@@ -103,7 +103,7 @@ def distance_score(board: search.Board, our: str, player: str) -> float:
     else:
         score = 1 / distance
 
-    distance = board.distance_to_win(search.next_player(our))[1]
+    foo, distance = board.distance_to_win(search.next_player(our))
     if distance == 1 and our != player:
         return - math.inf
     if distance == 0:
@@ -116,10 +116,10 @@ def distance_score(board: search.Board, our: str, player: str) -> float:
 
 def evaluate(board: search.Board, our: str, player: str) -> float:
     distance = distance_score(board, our, player)
-    triangles = board.triangles(our) - board.triangles(search.next_player(our))
-    diamonds = board.diamonds(our) - board.diamonds(search.next_player(our))
-    double_path = board.double_bridge(our) - board.double_bridge(
-        search.next_player(our))
-    captures = board.capturable(our) - board.capturable(
-        search.next_player(our))
-    return distance + triangles + diamonds + double_path + captures
+    # triangles = board.triangles(our) - board.triangles(search.next_player(our))
+    # diamonds = board.diamonds(our) - board.diamonds(search.next_player(our))
+    # double_path = board.double_bridge(our) - board.double_bridge(
+    #     search.next_player(our))
+    # captures = board.capturable(our) - board.capturable(
+    #     search.next_player(our))
+    return distance # + triangles + diamonds + double_path + captures
