@@ -194,8 +194,10 @@ class Board:
         """
         if diag_color is None:
             diag_color = color
+
         def color_filter(x):
             return x.color == color
+
         def off_color_filter(x):
             return x.color == diag_color
 
@@ -204,7 +206,8 @@ class Board:
             pieceneighs = self.neighbours(piece, off_color_filter)
             neighs = {frozenset({p, q}) for p in pieceneighs for q in
                       pieceneighs if p in self.neighbours(
-                q, off_color_filter) and q in self.neighbours(p, off_color_filter)}
+                q, off_color_filter) and q in
+                self.neighbours(p, off_color_filter)}
 
             def neighbours(one, two):
                 intersection = set(self.neighbours(
@@ -226,8 +229,6 @@ class Board:
 
         # divide by 4 because for every diamond the increment will be 4
         return count // 2
-
-
 
     def start_end_line(self, color: str):
         if color == "red":
@@ -345,12 +346,12 @@ class Board:
         from start to end. the start Hexagon will be return[0] and
         the end hexagon will be return[-1].
         """
+        self.filter_pieces(lambda x: x.reset_search())
         current = self.piece(*start)
         end = self.piece(*end)
         closed: List[Hexagon] = []
         opened: List[Hexagon] = [current]
         current.total_cost = current.incr_cost(player)
-        self.filter_pieces(lambda x: x.reset_search())
         while current.coords != end.coords:
             opened.sort(
                 key=lambda x: x.distance(end) + x.total_cost,

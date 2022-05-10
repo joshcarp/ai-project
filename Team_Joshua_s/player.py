@@ -62,14 +62,11 @@ def action(our: str, player: str, board: search.Board, depth: int, a: float,
            b: float):
     if depth == 0:
         utility = evaluate(board, our, player)
-        print(utility)
         return utility, None
     max_score, min_score = (-math.inf, None), (math.inf, None)
     for pieces in board.filter_pieces(lambda x: x.color == ""):
         act = search.Action(player, "PLACE", *pieces.coords)
         newboard = board.action(act)
-        if act.r == 2 and act.q == 2 and player == "red":
-            print()
         terminal = action(our,
                           search.next_player(player),
                           newboard,
@@ -102,7 +99,7 @@ def evaluate(board: search.Board, our: str, player: str) -> float:
     if distance == 0:
         score = math.inf
     else:
-        score = 1/distance
+        score = 1 / distance
 
     _, distance = board.distance_to_win(search.next_player(our))
     if distance == 1 and our != player:
@@ -112,8 +109,3 @@ def evaluate(board: search.Board, our: str, player: str) -> float:
     else:
         score -= 1 / distance
     return score
-
-
-
-
-

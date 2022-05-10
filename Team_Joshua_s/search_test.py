@@ -1,5 +1,4 @@
 import math
-import sys
 
 import Team_Joshua_s.player as player
 import Team_Joshua_s.search as search
@@ -67,7 +66,7 @@ def testplayer2():
 
     # pr = cProfile.Profile()
     # pr.enable()
-    pl = player.Player("red", 4, depth=3)
+    pl = player.Player("red", 4, depth=2)
     pl2 = player.Player("blue", 4, depth=2)
 
     for i in range(6):
@@ -136,6 +135,7 @@ def testdiamond():
     pl.turn("red", ("PLACE", 3, 2))
     print(pl.board)
     print(pl.board.diamonds("red"))
+
 
 def testdouble_bridges():
     pl = player.Player("red", 4)
