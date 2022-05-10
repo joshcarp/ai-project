@@ -61,11 +61,15 @@ class Player:
 def action(our: str, player: str, board: search.Board, depth: int, a: float,
            b: float):
     if depth == 0:
-        return evaluate(board, our), None
+        utility = evaluate(board, our, player)
+        print(utility)
+        return utility, None
     max_score, min_score = (-math.inf, None), (math.inf, None)
     for pieces in board.filter_pieces(lambda x: x.color == ""):
         act = search.Action(player, "PLACE", *pieces.coords)
         newboard = board.action(act)
+        if act.r == 2 and act.q == 2 and player == "red":
+            print()
         terminal = action(our,
                           search.next_player(player),
                           newboard,
@@ -74,9 +78,13 @@ def action(our: str, player: str, board: search.Board, depth: int, a: float,
                           b)
         terminal = (terminal[0], act)
         if our == player:
+            if max_score[0] == -math.inf:
+                max_score = terminal
             max_score = max(max_score, terminal, key=lambda x: x[0])
             a = max(a, terminal[0])
         else:
+            if min_score == math.inf:
+                min_score = terminal
             min_score = min(min_score, terminal, key=lambda x: x[0])
             b = min(b, terminal[0])
         if b <= a:
@@ -86,8 +94,26 @@ def action(our: str, player: str, board: search.Board, depth: int, a: float,
     return min_score
 
 
-def evaluate(board: search.Board, color: str) -> float:
-    _, distance = board.distance_to_win(color)
+def evaluate(board: search.Board, our: str, player: str) -> float:
+    score = 0
+    _, distance = board.distance_to_win(our)
+    if distance == 1 and our == player:
+        score = math.inf
     if distance == 0:
-        return math.inf
-    return 1 / distance
+        score = math.inf
+    else:
+        score = 1/distance
+
+    _, distance = board.distance_to_win(search.next_player(our))
+    if distance == 1 and our != player:
+        score -= math.inf
+    if distance == 0:
+        score -= math.inf
+    else:
+        score -= 1 / distance
+    return score
+
+
+
+
+

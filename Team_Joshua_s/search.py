@@ -186,22 +186,25 @@ class Board:
         # divide by 6 because for every triangle the increment will be 6
         return count // 6
 
-    def diamonds(self, color: str) -> int:
+    def diamonds(self, color: str, diag_color: str = None) -> int:
         """
         diamonds returns the number of diamonds of a particular color in
         the board
         :return:
         """
-
+        if diag_color is None:
+            diag_color = color
         def color_filter(x):
             return x.color == color
+        def off_color_filter(x):
+            return x.color == diag_color
 
         count = 0
         for piece in self.filter_pieces(color_filter):
-            pieceneighs = self.neighbours(piece, color_filter)
+            pieceneighs = self.neighbours(piece, off_color_filter)
             neighs = {frozenset({p, q}) for p in pieceneighs for q in
                       pieceneighs if p in self.neighbours(
-                q, color_filter) and q in self.neighbours(p, color_filter)}
+                q, off_color_filter) and q in self.neighbours(p, off_color_filter)}
 
             def neighbours(one, two):
                 intersection = set(self.neighbours(
@@ -223,6 +226,8 @@ class Board:
 
         # divide by 4 because for every diamond the increment will be 4
         return count // 2
+
+
 
     def start_end_line(self, color: str):
         if color == "red":
@@ -345,6 +350,7 @@ class Board:
         closed: List[Hexagon] = []
         opened: List[Hexagon] = [current]
         current.total_cost = current.incr_cost(player)
+        self.filter_pieces(lambda x: x.reset_search())
         while current.coords != end.coords:
             opened.sort(
                 key=lambda x: x.distance(end) + x.total_cost,

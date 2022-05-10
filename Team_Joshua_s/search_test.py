@@ -1,4 +1,5 @@
 import math
+import sys
 
 import Team_Joshua_s.player as player
 import Team_Joshua_s.search as search
@@ -62,12 +63,12 @@ def testplayer():
 
 # @profile
 
-
 def testplayer2():
+
     # pr = cProfile.Profile()
     # pr.enable()
-    pl = player.Player("red", 4, depth=1)
-    pl2 = player.Player("blue", 4, dumb=True)
+    pl = player.Player("red", 4, depth=3)
+    pl2 = player.Player("blue", 4, depth=2)
 
     for i in range(6):
         if i == 3:
@@ -136,6 +137,16 @@ def testdiamond():
     print(pl.board)
     print(pl.board.diamonds("red"))
 
+def testdouble_bridges():
+    pl = player.Player("red", 4)
+    # pl.turn("red", ("PLACE", 1, 0))
+    pl.turn("red", ("PLACE", 2, 0))
+    # pl.turn("red", ("PLACE", 1, 1))
+    pl.turn("red", ("PLACE", 0, 1))
+
+    print(pl.board)
+    print(pl.board.diamonds("red", ""))
+
 
 # if __name__ == '__main__':
 #     testplayer2()
@@ -176,8 +187,56 @@ def test_a_star_shortcut():
     assert path2 == path1
 
 
-# def test_defensive():
-#     pl = player.Player("red", 4, depth=1)
+def test_defensive():
+    pl = player.Player("red", 4, depth=2)
+    # pl.turn("red", ("PLACE", 1, 3))
+    pl.turn("blue", ("PLACE", 2, 0))
+    pl.turn("blue", ("PLACE", 2, 1))
+    pl.turn("red", ("PLACE", 1, 2))
+    print(pl.board)
+    print(player.evaluate(pl.board, "red", ""))
+    b1 = pl.board.action(search.Action("red", "PLACE", 3, 3))
+    print(b1)
+    print("b1", player.evaluate(b1, "red", ""))
+
+    b2 = pl.board.action(search.Action("red", "PLACE", 2, 2))
+    print(b2)
+    print("b2", player.evaluate(b2, "red", "blue"))
+
+    # pl.turn("red", ("PLACE", 2, 1))
+    # print(player.evaluate(pl.board, "red", ""))
+    act = pl.action()
+    pl.turn("red", act)
+    print(pl.board)
+
+
+def test_evaluate():
+    pl = player.Player("red", 4, depth=1)
+    pl.turn("blue", ("PLACE", 2, 0))
+    pl.turn("blue", ("PLACE", 2, 1))
+    pl.turn("blue", ("PLACE", 2, 2))
+    print(pl.board)
+    print(player.evaluate(pl.board, "red", ""))
+    pl.turn("red", ("PLACE", 1, 3))
+    print(pl.board)
+    print(player.evaluate(pl.board, "red", ""))
+    pl.turn("red", ("PLACE", 3, 3))
+    print(pl.board)
+    print(player.evaluate(pl.board, "red", ""))
+    pl.turn("red", ("PLACE", 2, 3))
+    print(pl.board)
+    print(player.evaluate(pl.board, "red", ""))
+
+
+def test_distance_to_win_2():
+    pl = player.Player("red", 4, depth=1)
+    path1, cost = pl.board.a_star("blue", (0, 0), (2, 2))
+
+    for elem in path1:
+        pl.board = pl.board.action(
+            search.Action("blue", "PLACE", *elem.coords))
+    print(pl.board)
+    print(pl.board.distance_to_win("blue"))
 
 
 def test_distance_to_win():
