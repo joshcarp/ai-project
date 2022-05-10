@@ -142,9 +142,9 @@ class Board:
     def __repr__(self):
         d = {}
         for e in self.filter_pieces():
-            d[e.coords] = f"{e.coords[0]}{e.coords[1]}"
+            d[e.coords] = f"{e.coords[0]}.{e.coords[1]}"
             if e.color != "":
-                d[e.coords] = f"{e.color[0]}{e.coords[0]}{e.coords[1]}"
+                d[e.coords] = f"{e.color[0]}:{e.coords[0]}.{e.coords[1]}"
         return util.board_string(self.n, d)
 
     def filter_pieces(self,
