@@ -4,9 +4,6 @@ import Team_Joshua_s.player as player
 import Team_Joshua_s.search as search
 
 
-# from pstats import SortKey
-
-
 def testneighbours():
     board: search.Board = search.Board(5)
     tests = [
@@ -60,9 +57,6 @@ def testplayer():
     # assert player.evaluate(pl.board, "red") == -2
 
 
-# @profile
-
-# pre hash: 1 passed in 162.28s (0:02:42)
 def testfoo():
     print("hello")
     pl = player.Player("red", 15, depth=1)

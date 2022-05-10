@@ -121,68 +121,15 @@ class Board:
     """
     mutations: List[List[List[Hexagon]]]
     n: int
-    last_action: Action = None
+    last_action: Action
     distances_cache2: {}
     distances_cache3: {}
     colors = ["red", "blue"]
-    init = False
-
-    def init_distances(self):
-        return
-        if self.init:
-            raise Exception
-        self.init = True
-        self.distances_cache2 = {}
-        self.distances_cache3 = {}
-        for color in self.colors:
-            if color not in self.distances_cache2:
-                self.distances_cache2[color] = {}
-            if color not in self.distances_cache3:
-                self.distances_cache3[color] = {}
-            start, end = self.start_end_line(color)
-            for s in start:
-                for e in end:
-                    shortest_path = self.a_star(color, s.coords, e.coords)
-                    self.distances_cache2[color][
-                        (s.coords, e.coords)] = shortest_path
-                    for elem in shortest_path[0]:
-                        if elem.coords not in self.distances_cache3[color]:
-                            self.distances_cache3[color][elem.coords] = set()
-                        self.distances_cache3[color][elem.coords].add(
-                            (s.coords, e.coords))
-
-    def update_distances(self, action: Action):
-        return
-        for color in self.colors:
-            to_update = self.distances_cache3[color][(action.r, action.q)]
-            self.distances_cache3[color][(action.r, action.q)] = set()
-            for elem in to_update:
-                if self.piece(*elem[0]).color == next_player(color):
-                    continue
-                if self.piece(*elem[1]).color == next_player(color):
-                    continue
-                new_path = self.a_star(color, elem[0], elem[1])
-                self.distances_cache2[color][(elem[0], elem[1])] = new_path
-                for elem2 in new_path[0]:
-                    if elem2.coords not in self.distances_cache3[color]:
-                        self.distances_cache3[color][elem2.coords] = set()
-                    self.distances_cache3[color][elem2.coords].add(elem)
-
-    # TODO: @joshcarp delete this
-    def pieces(self) -> List[List[Hexagon]]:
-        pieces: List[List[Hexagon]] = []
-        for i in range(self.n):
-            pieces.append([])
-            for j in range(self.n):
-                color = ""
-                if len(self.mutations[i][j]) > 0:
-                    color = self.mutations[i][j][-1].color
-                pieces[i].append(Hexagon(i, j, color))
-        return pieces
 
     def __init__(self, n, copy=False):
         if copy:
             return
+        self.last_action = None
         self.n = n
         self.mutations = []
         if copy:
@@ -191,14 +138,12 @@ class Board:
             self.mutations.append([])
             for j in range(n):
                 self.mutations[i].append([Hexagon(i, j)])
-        self.init_distances()
 
     def __repr__(self):
         d: {} = {}
-        for list in self.pieces():
-            for e in list:
-                if e.color != "":
-                    d[e.coords] = e.color
+        for e in self.filter_pieces():
+            if e.color != "":
+                d[e.coords] = e.color
         return util.board_string(self.n, d)
 
     def filter_pieces(self,
@@ -373,19 +318,6 @@ class Board:
         res = self.a_star(color, start, end)
         return res
 
-        # a = list(self.distances_cache2[color].values())
-
-        # start_line, end_line = self.start_end_line(color)
-        # distances = []
-        # for start in start_line:
-        #     for end in end_line:
-        #         path, cost = self.a_star(color, start.coords, end.coords)
-        #         distances.append((path, cost))
-        # if len(distances) == 0:
-        #     return ([], math.inf)
-        #
-        # return min(distances, key=lambda x: x[1])
-
     def process_action(b, action: Action) -> List[Hexagon]:
         coords = (action.r, action.q)
         changed = [Hexagon(action.r, action.q, action.player)]
@@ -428,7 +360,6 @@ class Board:
             cpy.last_action = action
         for elem in changed:
             cpy.mutations[elem.r()][elem.q()].append(elem)
-        cpy.update_distances(action)
         return cpy
 
     def neighbours(self, piece: Hexagon, filter: Callable[[
@@ -525,8 +456,6 @@ class Board:
             newboard.mutations.append([])
             for j in range(self.n):
                 newboard.mutations[i].append(self.mutations[i][j].copy())
-        # newboard.distances_cache2 = self.distances_cache2
-        # newboard.distances_cache3 = self.distances_cache3
         return newboard
 
 
