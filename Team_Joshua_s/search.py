@@ -166,25 +166,35 @@ class Board:
         return piece.coords[0] in range(0, self.n) and \
             piece.coords[1] in range(0, self.n)
 
-    def triangles(self, color: str) -> int:
+    def capturable(self, color: str) -> int:
+        return self.triangles(next_player(color), neigh_color=color)
+
+    def triangles(self, color: str, neigh_color: str = None) -> int:
         """
         triangles returns the number of triangles of a particular color in
         the board counted in any orientation.
         :return:
         """
+        if neigh_color is None:
+            neigh_color = color
 
         def color_filter(x):
             return x.color == color
 
+        def neigh_color_filter(x):
+            return x.color == neigh_color
+
         count = 0
         for piece in self.filter_pieces(color_filter):
-            pieceneighs = self.neighbours(piece, color_filter)
+            pieceneighs = self.neighbours(piece, neigh_color_filter)
             for neigh in pieceneighs:
-                neighneigh = set(self.neighbours(neigh, color_filter))
+                neighneigh = set(self.neighbours(neigh, neigh_color_filter))
                 if len(neighneigh.intersection(pieceneighs)) != 0:
                     count += 1
         # divide by 6 because for every triangle the increment will be 6
-        return count // 6
+        if color == neigh_color:
+            return count // 6
+        return count // 2
 
     def diamonds(self, color: str, diag_color: str = None) -> int:
         """

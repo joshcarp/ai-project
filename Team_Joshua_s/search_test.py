@@ -122,6 +122,16 @@ def testtriangle():
     print(pl.board.triangles("red"))
 
 
+def testcapturable():
+    pl = player.Player("red", 4)
+    pl.turn("red", ("PLACE", 1, 0))
+    pl.turn("blue", ("PLACE", 2, 0))
+    pl.turn("red", ("PLACE", 1, 1))
+    print(pl.board)
+    print(pl.board.capturable("red"))
+    print(pl.board.capturable("blue"))
+
+
 def testdiamond():
     pl = player.Player("red", 4)
     pl.turn("red", ("PLACE", 1, 0))
