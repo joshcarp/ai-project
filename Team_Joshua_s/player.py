@@ -8,7 +8,7 @@ from Team_Joshua_s import utils
 
 class Player:
     player: str = ""
-    board: search.Board = None
+    brd: search.Board = None
     depth: int
     random: bool
 
@@ -65,17 +65,17 @@ class Player:
 def action(
         our: str,
         player: str,
-        board: search.Board,
+        brd: search.Board,
         depth: int,
         a: float,
         b: float):
     if depth == 0:
-        utility = evaluate(board, our, player)
+        utility = evaluate(brd, our, player)
         return utility, None
     max_score, min_score = (-math.inf, None), (math.inf, None)
-    for pieces in board.filter_pieces(lambda x: x.color == ""):
+    for pieces in brd.filter_pieces(lambda x: x.color == ""):
         act = utils.Action(player, "PLACE", *pieces.coords)
-        newboard = board.action(act)
+        newboard = brd.action(act)
         terminal = action(our,
                           utils.next(player),
                           newboard,
@@ -101,9 +101,9 @@ def action(
     return min_score
 
 
-def distance_score(board: search.Board, our: str, player: str) -> float:
+def distance_score(brd: search.Board, our: str, player: str) -> float:
     score = 0
-    foo, distance = evaluation.distance_to_win(board, our)
+    foo, distance = evaluation.distance_to_win(brd, our)
     if distance == 1 and our == player:
         return math.inf
     if distance == 0:
@@ -111,7 +111,7 @@ def distance_score(board: search.Board, our: str, player: str) -> float:
     else:
         score = 1 / distance
 
-    foo, distance = evaluation.distance_to_win(board, utils.next(our))
+    foo, distance = evaluation.distance_to_win(brd, utils.next(our))
     if distance == 1 and our != player:
         return - math.inf
     if distance == 0:
@@ -122,8 +122,8 @@ def distance_score(board: search.Board, our: str, player: str) -> float:
     return score
 
 
-def evaluate(board: search.Board, our: str, player: str) -> float:
-    distance = distance_score(board, our, player)
+def evaluate(brd: search.Board, our: str, player: str) -> float:
+    distance = distance_score(brd, our, player)
     # triangles = evaluation.triangles(board, our) - \
     #     evaluation.triangles(board, utils.next(our))
     # diamonds = evaluation.diamonds(board, our) - \

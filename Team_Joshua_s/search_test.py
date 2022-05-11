@@ -6,7 +6,7 @@ from Team_Joshua_s import evaluation, utils, hexagon
 
 
 def testneighbours():
-    board: search.Board = search.Board(5)
+    brd: search.Board = search.Board(5)
     tests = [
         {
             "coord": (0, 0),
@@ -28,7 +28,7 @@ def testneighbours():
 
     for elem in tests:
         coord = elem["coord"]
-        neighbours = board.neighbours(hexagon.Hexagon(coord[0], coord[1]))
+        neighbours = brd.neighbours(hexagon.Hexagon(coord[0], coord[1]))
         assert elem["neighbours"] == {e.coords for e in neighbours}
 
 
@@ -193,35 +193,35 @@ def testdouble_bridges():
 
 
 def test_a_star():
-    board = search.Board(5)
-    board = board.action(utils.Action("blue", "PLACE", 1, 0))
-    board = board.action(utils.Action("blue", "PLACE", 1, 1))
-    board = board.action(utils.Action("blue", "PLACE", 1, 3))
-    board = board.action(utils.Action("blue", "PLACE", 3, 2))
-    print(board)
-    solution, cost = board.a_star("red", board.piece(4, 2), board.piece(0, 0))
+    brd = search.Board(5)
+    brd = brd.action(utils.Action("blue", "PLACE", 1, 0))
+    brd = brd.action(utils.Action("blue", "PLACE", 1, 1))
+    brd = brd.action(utils.Action("blue", "PLACE", 1, 3))
+    brd = brd.action(utils.Action("blue", "PLACE", 3, 2))
+    print(brd)
+    solution, cost = brd.a_star("red", brd.piece(4, 2), brd.piece(0, 0))
     assert len(solution) == 8
     assert cost == 8
 
-    solution, cost = board.a_star("red", board.piece(4, 2), board.piece(0, 0))
+    solution, cost = brd.a_star("red", brd.piece(4, 2), brd.piece(0, 0))
     assert len(solution) == 8
     assert cost == 8
 
 
 def test_a_star_shortcut():
-    board = search.Board(5)
-    board = board.action(utils.Action("blue", "PLACE", 1, 0))
-    board = board.action(utils.Action("blue", "PLACE", 1, 1))
-    board = board.action(utils.Action("blue", "PLACE", 1, 3))
-    board = board.action(utils.Action("blue", "PLACE", 3, 2))
-    print(board)
-    path1, cost = board.a_star("red", board.piece(4, 2), board.piece(0, 0))
+    brd = search.Board(5)
+    brd = brd.action(utils.Action("blue", "PLACE", 1, 0))
+    brd = brd.action(utils.Action("blue", "PLACE", 1, 1))
+    brd = brd.action(utils.Action("blue", "PLACE", 1, 3))
+    brd = brd.action(utils.Action("blue", "PLACE", 3, 2))
+    print(brd)
+    path1, cost = brd.a_star("red", brd.piece(4, 2), brd.piece(0, 0))
     assert cost == 8
     for elem in path1:
-        board = board.action(utils.Action("red", "PLACE", *elem.coords))
-    print(board)
+        brd = brd.action(utils.Action("red", "PLACE", *elem.coords))
+    print(brd)
 
-    path2, cost = board.a_star("red", board.piece(4, 2), board.piece(0, 0))
+    path2, cost = brd.a_star("red", brd.piece(4, 2), brd.piece(0, 0))
     assert cost == 0
 
     assert path2 == path1
@@ -325,15 +325,15 @@ def test_distance_to_win_2():
 
 
 def test_new_distance():
-    board = search.Board(2)
+    brd = search.Board(2)
     # board.foo("red")
-    a = evaluation.distance_to_win(board, "red")
-    print(board)
+    a = evaluation.distance_to_win(brd, "red")
+    print(brd)
     print(a)
-    board = board.action(utils.Action("blue", "PLACE", 1, 0))
-    board = board.action(utils.Action("blue", "PLACE", 1, 0))
-    board = board.action(utils.Action("blue", "PLACE", 1, 0))
+    brd = brd.action(utils.Action("blue", "PLACE", 1, 0))
+    brd = brd.action(utils.Action("blue", "PLACE", 1, 0))
+    brd = brd.action(utils.Action("blue", "PLACE", 1, 0))
 
-    a = evaluation.distance_to_win(board, "red")
-    print(board)
+    a = evaluation.distance_to_win(brd, "red")
+    print(brd)
     print(a)
