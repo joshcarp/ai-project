@@ -96,12 +96,11 @@ class Board:
                 continue
             neighneighs = b.neighbours(elem, filter=filter2)
             for elem2 in neighneighs:
-                if elem2.coords in seen.keys(
-                ) and seen[elem2.coords].color == elem.color:
+                if elem2.coords in seen.keys() \
+                        and seen[elem2.coords].color == elem.color:
                     changed.append(hexagon.Hexagon(*elem.coords))
                     changed.append(
                         hexagon.Hexagon(*seen[elem2.coords].coords))
-                    return changed
                 seen[elem2.coords] = elem
         return changed
 

@@ -91,7 +91,7 @@ def testa_star():
 def test_steal():
     pl = player.Player("red", 15)
     pl.turn("red", ("PLACE", 1, 1))
-    pl.turn("blue", ("STEAL", ))
+    pl.turn("blue", ("STEAL",))
     print(pl.board)
 
 
@@ -402,3 +402,91 @@ def test_distance_1():
     dist = evaluation.distance_to_win(brd, "red")
     print(brd)
     print(dist)
+
+
+def testplayer3():
+    # pr = cProfile.Profile()
+    # pr.enable()
+    n = 15
+    print("hello")
+    pl = player.Player("blue", n)
+
+    [pl.turn("blue", ("PLACE", 14, i)) for i in range(0, 9)]
+    [pl.turn("blue", ("PLACE", 12, i)) for i in range(9, 13)]
+    [pl.turn("red", ("PLACE", i, 14)) for i in range(0, 6)]
+    pl.turn("red", ("PLACE", 14, 9))
+    pl.turn("red", ("PLACE", 13, 9))
+    pl.turn("blue", ("PLACE", 13, 1))
+    pl.turn("red", ("PLACE", 6, 13))
+    pl.turn("red", ("PLACE", 7, 13))
+    pl.turn("red", ("PLACE", 8, 12))
+    pl.turn("red", ("PLACE", 9, 11))
+    pl.turn("red", ("PLACE", 9, 10))
+
+    pl.turn("red", ("PLACE", 11, 12))
+    pl.turn("red", ("PLACE", 11, 11))
+
+    act = pl.action()
+
+    print(pl.board)
+
+    # for i in range(7):
+    #     if i == 3:
+    #         print()
+    #     start_time = time.time()
+    #     act = pl.action()
+    #     print(pl.board)
+    #     print(pl.player, act)
+    #     pl.turn(pl.player, act)
+    #     pl2.turn(pl2.player, act)
+    #     print(time.time() - start_time)
+    #     act = pl2.action()
+    #     print(pl.board)
+    #     print(pl2.player, act)
+    #     pl.turn(pl2.player, act)
+    #     pl2.turn(pl2.player, act)
+
+def test_capture():
+    a = player.Player("blue", 5)
+
+    a.turn("red", ("PLACE", 2, 0))
+
+    a.turn("red", ("PLACE", 2, 1))
+    a.turn("red", ("PLACE",3, 1))
+    a.turn("blue", ("PLACE", 3, 0))
+    a.turn("blue", ("PLACE", 1, 2))
+    a.turn("blue", ("PLACE", 1, 3))
+    a.turn("blue", ("PLACE", 1, 4))
+
+    a.turn("red", ("PLACE", 0, 2))
+    a.turn("red", ("PLACE", 0, 3))
+    a.turn("red", ("PLACE", 0, 4))
+    a.turn("blue", ("PLACE", 1, 1))
+    print(a.board)
+
+def test_capture2():
+        a = player.Player("blue", 5)
+
+        a.turn("red", ("PLACE", 2, 0))
+
+        a.turn("red", ("PLACE", 2, 1))
+        a.turn("red", ("PLACE", 3, 1))
+        a.turn("blue", ("PLACE", 3, 0))
+        a.turn("blue", ("PLACE", 1, 2))
+        a.turn("blue", ("PLACE", 1, 3))
+        a.turn("blue", ("PLACE", 1, 4))
+
+        a.turn("red", ("PLACE", 0, 2))
+        a.turn("red", ("PLACE", 0, 3))
+        a.turn("red", ("PLACE", 0, 4))
+        a.turn("blue", ("PLACE", 1, 1))
+        print(a.board)
+
+
+
+
+
+
+
+
+
