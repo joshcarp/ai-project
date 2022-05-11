@@ -82,8 +82,8 @@ def action(
         depth: int,
         a: float,
         b: float):
-    utility = evaluation.evaluate(brd, our, player)
-    if depth == 0 or utility == 100000000 or utility == -100000000:
+    utility = evaluation.evaluate(brd, our)
+    if depth == 0 or utility in evaluation.special_values:
         return utility, None
     max_score, min_score = (None, None), (None, None)
     pp, err = evaluation.distance_to_win(brd, player)

@@ -118,30 +118,36 @@ def distance_to_win(brd: board.Board,
     return res
 
 
-def distance_score(brd: board.Board, our: str, player: str) -> float:
+win_one_away = 10000000
+win_immidiate = 100000000
+
+special_values = [x * win_immidiate for x in [1, -1]]
+
+
+def distance_score(brd: board.Board, our: str) -> float:
     score = 0
     foo, distance = distance_to_win(brd, our)
     if distance == 1:
-        return 10000000
+        return win_one_away
     if distance == 0:
-        return 100000000
+        return win_immidiate
     else:
         score = 1 / distance
 
     foo, distance = distance_to_win(brd, utils.next(our))
     if distance == 1:
-        return - 10000000
+        return - win_one_away
     if distance == 0:
-        return - 100000000
+        return - win_immidiate
     else:
         score -= 1 / distance
 
     return score
 
 
-def evaluate(brd: board.Board, our: str, player: str) -> float:
-    distance = distance_score(brd, our, player)
-    if distance == 100000000 or distance == - 100000000:
+def evaluate(brd: board.Board, our: str) -> float:
+    distance = distance_score(brd, our)
+    if distance in special_values:
         return distance
     triangle = triangles(brd, our) - \
         triangles(brd, utils.next(our))
