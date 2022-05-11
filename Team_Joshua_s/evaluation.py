@@ -190,4 +190,4 @@ def evaluate(brd: board.Board, color: str) -> float:
         double_bridge(brd, utils.next(color))
     capture = capturable(brd, color) - \
         capturable(brd, utils.next(color))
-    return distance + 0.1 * triangle + 0.05 * double_pat + 0.4 * capture
+    return 10 * distance + 0.1 * triangle + 0.05 * double_pat + 0.4 * capture
