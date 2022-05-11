@@ -1,11 +1,11 @@
-from Team_Joshua_s import utils, search, hexagon
+from Team_Joshua_s import utils, board, hexagon
 
 
-def capturable(brd: search.Board, color: str) -> int:
+def capturable(brd: board.Board, color: str) -> int:
     return triangles(brd, utils.next(color), neigh_color=color)
 
 
-def triangles(brd: search.Board, color: str, neigh_color: str = None) -> int:
+def triangles(brd: board.Board, color: str, neigh_color: str = None) -> int:
     """
     triangles returns the number of triangles of a particular color in
     the board counted in any orientation.
@@ -33,11 +33,11 @@ def triangles(brd: search.Board, color: str, neigh_color: str = None) -> int:
     return count // 2
 
 
-def double_bridge(brd: search.Board, color: str):
+def double_bridge(brd: board.Board, color: str):
     return diamonds(brd, color, "")
 
 
-def diamonds(brd: search.Board, color: str, diag_color: str = None) -> int:
+def diamonds(brd: board.Board, color: str, diag_color: str = None) -> int:
     """
     diamonds returns the number of diamonds of a particular color in
     the board
@@ -79,7 +79,7 @@ def diamonds(brd: search.Board, color: str, diag_color: str = None) -> int:
     return count // 2
 
 
-def distance_to_win(brd: search.Board,
+def distance_to_win(brd: board.Board,
                     color: str) -> ([hexagon.Hexagon],
                                     int):
     """

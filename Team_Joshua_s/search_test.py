@@ -1,12 +1,10 @@
 import time
 
-import Team_Joshua_s.player as player
-import Team_Joshua_s.search as search
-from Team_Joshua_s import evaluation, utils, hexagon
+from Team_Joshua_s import evaluation, utils, hexagon, board, player
 
 
 def testneighbours():
-    brd: search.Board = search.Board(5)
+    brd: board.Board = board.Board(5)
     tests = [
         {
             "coord": (0, 0),
@@ -193,7 +191,7 @@ def testdouble_bridges():
 
 
 def test_a_star():
-    brd = search.Board(5)
+    brd = board.Board(5)
     brd = brd.action(utils.Action("blue", "PLACE", 1, 0))
     brd = brd.action(utils.Action("blue", "PLACE", 1, 1))
     brd = brd.action(utils.Action("blue", "PLACE", 1, 3))
@@ -209,7 +207,7 @@ def test_a_star():
 
 
 def test_a_star_shortcut():
-    brd = search.Board(5)
+    brd = board.Board(5)
     brd = brd.action(utils.Action("blue", "PLACE", 1, 0))
     brd = brd.action(utils.Action("blue", "PLACE", 1, 1))
     brd = brd.action(utils.Action("blue", "PLACE", 1, 3))
@@ -281,7 +279,7 @@ def test_distance_to_win_2():
 
 
 # def test_distance_to_win():
-#     board = search.Board(5)
+#     board = board.Board(5)
 #     board = board.action(utils.Action("blue", "PLACE", 1, 0))
 #     board = board.action(utils.Action("blue", "PLACE", 1, 1))
 #     board = board.action(utils.Action("blue", "PLACE", 1, 3))
@@ -325,7 +323,7 @@ def test_distance_to_win_2():
 
 
 def test_new_distance():
-    brd = search.Board(2)
+    brd = board.Board(2)
     # board.foo("red")
     a = evaluation.distance_to_win(brd, "red")
     print(brd)

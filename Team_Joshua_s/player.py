@@ -1,14 +1,13 @@
 import math
 import random
 
-import Team_Joshua_s.search as search
 import Team_Joshua_s.evaluation as evaluation
-from Team_Joshua_s import utils
+from Team_Joshua_s import utils, board
 
 
 class Player:
     player: str = ""
-    brd: search.Board = None
+    brd: board.Board = None
     depth: int
     random: bool
 
@@ -21,7 +20,7 @@ class Player:
         play as Red, or the string "blue" if your player will play
         as Blue.
         """
-        self.board = search.Board(n)
+        self.board = board.Board(n)
         self.player = player
         if depth is not None:
             self.depth = depth
@@ -65,7 +64,7 @@ class Player:
 def action(
         our: str,
         player: str,
-        brd: search.Board,
+        brd: board.Board,
         depth: int,
         a: float,
         b: float):
@@ -101,7 +100,7 @@ def action(
     return min_score
 
 
-def distance_score(brd: search.Board, our: str, player: str) -> float:
+def distance_score(brd: board.Board, our: str, player: str) -> float:
     score = 0
     foo, distance = evaluation.distance_to_win(brd, our)
     if distance == 1 and our == player:
@@ -122,7 +121,7 @@ def distance_score(brd: search.Board, our: str, player: str) -> float:
     return score
 
 
-def evaluate(brd: search.Board, our: str, player: str) -> float:
+def evaluate(brd: board.Board, our: str, player: str) -> float:
     distance = distance_score(brd, our, player)
     # triangles = evaluation.triangles(board, our) - \
     #     evaluation.triangles(board, utils.next(our))
