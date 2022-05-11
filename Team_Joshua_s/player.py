@@ -20,8 +20,8 @@ class Player:
         10: 2,
         11: 2,
         12: 2,
-        13: 2,
-        14: 2,
+        13: 1,
+        14: 1,
         15: 1}
 
     def __init__(self, player: str, n: int, depth: int = 3, random=False):

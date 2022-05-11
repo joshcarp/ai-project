@@ -141,12 +141,10 @@ def distance_score(brd: board.Board, our: str, player: str) -> float:
 
 def evaluate(brd: board.Board, our: str, player: str) -> float:
     distance = distance_score(brd, our, player)
-    # triangles = evaluation.triangles(board, our) - \
-    #     evaluation.triangles(board, utils.next(our))
-    # diamonds = evaluation.diamonds(board, our) - \
-    #     evaluation.diamonds(board, utils.next(our))
-    # double_path = evaluation.double_bridge(board, our) - \
-    #     evaluation.double_bridge(board, utils.next(our))
-    # captures = evaluation.capturable(board, our) - \
-    #     evaluation.capturable(board, utils.next(our))
-    return distance  # + triangles + diamonds + double_path + captures
+    triangle = triangles(brd, our) - \
+        triangles(brd, utils.next(our))
+    double_pat = double_bridge(brd, our) - \
+        double_bridge(brd, utils.next(our))
+    capture = capturable(brd, our) - \
+        capturable(brd, utils.next(our))
+    return distance + 0.1 * triangle + 0.1 * double_pat + 0.1 * capture

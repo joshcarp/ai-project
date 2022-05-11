@@ -84,15 +84,23 @@ def testa_star():
 
     print(s)
 
+def test_steal():
+    pl = player.Player("red", 15)
+    pl.turn("red", ("PLACE", 1, 1))
+    pl.turn("blue", ("STEAL", ))
+    print(pl.board)
+
+
 
 def testplayer2():
     # pr = cProfile.Profile()
     # pr.enable()
+    n = 15
     print("hello")
-    pl = player.Player("red", 15)
-    pl2 = player.Player("blue", 15, random=True)
+    pl = player.Player("red", n)
+    pl2 = player.Player("blue", n, random=True)
 
-    for i in range(6):
+    for i in range(7):
         if i == 3:
             print()
         start_time = time.time()
