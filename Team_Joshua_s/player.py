@@ -82,36 +82,58 @@ def action(
         depth: int,
         a: float,
         b: float):
+    """
+    recursivley searches board states in order to find the one that maximises
+    our's evaluation.
+    :param our: The players color.
+    :param player: The player that who's turn it is.
+    :param brd: a board.
+    :param depth: depth to search.
+    :param a: alpha for alpha beta pruning.
+    :param b: beta for alpha beta pruning.
+    :return: (best action to take, evaluation of deepest node)
+    """
     utility = evaluation.evaluate(brd, our)
     if depth == 0 or utility in evaluation.special_values:
         return utility, None
     max_score, min_score = (None, None), (None, None)
-    pp, err = evaluation.distance_to_win(brd, player)
-    pp = [e for e in pp if e.color == ""]
-    pp2, err = evaluation.distance_to_win(brd, utils.next(player))
-    pp.extend([e for e in pp2 if e.color == ""])
-    for pieces in pp:
+
+    # get the minimum path for the current player.
+    path, _ = evaluation.distance_to_win(brd, player)
+    path = [e for e in path if e.color == ""]
+
+    # get the minimum path for the next player
+    path2, _ = evaluation.distance_to_win(brd, utils.next(player))
+    path.extend([e for e in path2 if e.color == ""])
+    # This iterates only over the paths that are in the minimum distances
+    # for either side and doesn't expand anything else
+    for pieces in path:
         if pieces.coords == (0, 2):
             a = 1
         act = utils.Action(player, "PLACE", *pieces.coords)
         newboard = brd.action(act)
-        terminal = action(our,
+        evaluate = action(our,
                           utils.next(player),
                           newboard,
                           depth - 1,
                           a,
                           b)
-        terminal = (terminal[0], act)
+        evaluate = (evaluate[0], act)
+
+        # minimax algorithm:
+        # If we're the player then we want to maximise the score.
         if our == player:
             if max_score[0] is None:
-                max_score = terminal
-            max_score = max(max_score, terminal, key=lambda x: x[0])
-            a = max(a, terminal[0])
+                max_score = evaluate
+            max_score = max(max_score, evaluate, key=lambda x: x[0])
+            a = max(a, evaluate[0])
+        # If the other player is playing then we want to minimise the score.
         else:
             if min_score[0] is None:
-                min_score = terminal
-            min_score = min(min_score, terminal, key=lambda x: x[0])
-            b = min(b, terminal[0])
+                min_score = evaluate
+            min_score = min(min_score, evaluate, key=lambda x: x[0])
+            b = min(b, evaluate[0])
+        # alpha beta pruning, yay
         if b <= a:
             break
     if our == player:

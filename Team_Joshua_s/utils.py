@@ -1,10 +1,17 @@
 from collections import namedtuple
 
+
+# Action is a convenience and is more self documenting than using raw tuples.
 Action = namedtuple('Action', 'player type r q')
 Action.__new__.__defaults__ = (None,) * len(Action._fields)
 
 
 def next(current: str) -> str:
+    """
+    returns the player that will play next
+    :param current:
+    :return:
+    """
     if current == "red":
         return "blue"
     return "red"
@@ -19,6 +26,10 @@ def direction_vectors() -> [(int, int)]:
 
 
 def start_end_line(self, color: str):
+    """
+    returns the start and end line for a particular color.
+    for red it will be the top and bottom, for blue it will be left and right.
+    """
     if color == "red":
         def start_f(x): return self.piece(0, x)
         def end_f(x): return self.piece(self.n - 1, x)

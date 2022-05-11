@@ -67,6 +67,12 @@ class Board:
             piece[1] in range(0, self.n)
 
     def process_action(b, action: utils.Action) -> List[hexagon.Hexagon]:
+        """
+        process_action will process an action and will mutate the state of the
+        board to reflect the new board state.
+        :param action:
+        :return:
+        """
         coords = (action.r, action.q)
         changed = [hexagon.Hexagon(action.r, action.q, action.player)]
 
@@ -95,6 +101,12 @@ class Board:
         return changed
 
     def action(self, action: utils.Action):
+        """
+        action taked in an Action and returns the new board state without
+        mutating the old one
+        :param action:
+        :return:
+        """
         cpy: Board = copy(self)
         changed = []
         if action.type == "STEAL":

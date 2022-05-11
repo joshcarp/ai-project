@@ -31,6 +31,11 @@ class Hexagon:
             self.color = color
 
     def incr_cost(self, player: str) -> float:
+        """
+        returns the incremental cost for player on current node.
+        :param player:
+        :return:
+        """
         if self.color == player:
             return sys.float_info.epsilon
         if self.color == "":
@@ -38,10 +43,16 @@ class Hexagon:
         return math.inf
 
     def reset_search(self):
+        """
+        resets the Hexagon's previous and total_cost attributes.
+        """
         self.previous = None
         self.total_cost = math.inf
 
     def end_search(self):
+        """
+        used to reset search when modified a star algorithm is used.
+        """
         self.reset_search()
         self.custom_neighbours = None
 

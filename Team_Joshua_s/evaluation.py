@@ -2,6 +2,12 @@ from Team_Joshua_s import utils, board, hexagon
 
 
 def capturable(brd: board.Board, color: str) -> int:
+    """
+    caapturable returns the number of immediately capture-able pieces by color.
+    :param brd: bard
+    :param color: color player making the capture
+    :return: number of capturable plays
+    """
     return triangles(brd, utils.next(color), neigh_color=color)
 
 
@@ -34,6 +40,12 @@ def triangles(brd: board.Board, color: str, neigh_color: str = None) -> int:
 
 
 def double_bridge(brd: board.Board, color: str):
+    """
+    counts the number of double bridge plays for color
+    :param brd: a board
+    :param color: the color making the play
+    :return: number of double bridge plays for color
+    """
     return diamonds(brd, color, "")
 
 
@@ -83,8 +95,11 @@ def distance_to_win(brd: board.Board,
                     color: str) -> ([hexagon.Hexagon],
                                     int):
     """
-    returns the number of tiles color has to until a connection is made
+    returns the number of tiles color has to until a win is made
     :return:
+    :param brd: a board
+    :param color: a color
+    :return: the path of shortest win, path cost
     """
     last_eval = brd.distances_cache[color]
     if last_eval is not None:
@@ -93,7 +108,7 @@ def distance_to_win(brd: board.Board,
                 last_action.r,
                 last_action.q) not in last_eval[0]:
             last_eval = ([brd.piece(*x.coords)
-                         for x in last_eval[0]], last_eval[1])
+                          for x in last_eval[0]], last_eval[1])
             brd.distances_cache[color] = last_eval
             return last_eval
 
@@ -118,19 +133,29 @@ def distance_to_win(brd: board.Board,
     return res
 
 
+# win_one_away indicates that the win is one away.
 win_one_away = 10000000
-win_immidiate = 100000000
 
-special_values = [x * win_immidiate for x in [1, -1]]
+# win_one_away indicates that the board is already in a winning state.
+win_immediate = 100000000
+
+# indicates either a win for the player or a win for the opponent.
+special_values = [x * win_immediate for x in [1, -1]]
 
 
 def distance_score(brd: board.Board, our: str) -> float:
+    """
+    distance of score for a particular color
+    :param brd: a board
+    :param our: the color that the player is
+    :return: a distance score of how important this piece is
+    """
     score = 0
     foo, distance = distance_to_win(brd, our)
     if distance == 1:
         return win_one_away
     if distance == 0:
-        return win_immidiate
+        return win_immediate
     else:
         score = 1 / distance
 
@@ -138,21 +163,27 @@ def distance_score(brd: board.Board, our: str) -> float:
     if distance == 1:
         return - win_one_away
     if distance == 0:
-        return - win_immidiate
+        return - win_immediate
     else:
         score -= 1 / distance
 
     return score
 
 
-def evaluate(brd: board.Board, our: str) -> float:
-    distance = distance_score(brd, our)
+def evaluate(brd: board.Board, color: str) -> float:
+    """
+    returns the evaluation score of this board for a color.
+    :param brd: a Board
+    :param color: color to ealuate for
+    :return: a evaluation score of how desirable the state is.
+    """
+    distance = distance_score(brd, color)
     if distance in special_values:
         return distance
-    triangle = triangles(brd, our) - \
-        triangles(brd, utils.next(our))
-    double_pat = double_bridge(brd, our) - \
-        double_bridge(brd, utils.next(our))
-    capture = capturable(brd, our) - \
-        capturable(brd, utils.next(our))
+    triangle = triangles(brd, color) - \
+        triangles(brd, utils.next(color))
+    double_pat = double_bridge(brd, color) - \
+        double_bridge(brd, utils.next(color))
+    capture = capturable(brd, color) - \
+        capturable(brd, utils.next(color))
     return distance + 0.1 * triangle + 0.05 * double_pat + 0.4 * capture
