@@ -61,7 +61,7 @@ def testplayer():
 
 def testfoo():
     print("hello")
-    pl = player.Player("red", 4, depth=1)
+    pl = player.Player("red", 4)
     pl.turn("red", ("PLACE", 0, 1))
     pl.turn("red", ("PLACE", 1, 1))
     pl.turn("red", ("PLACE", 2, 1))
@@ -243,7 +243,7 @@ def test_a_star_shortcut():
 
 
 def test_defensive():
-    pl = player.Player("red", 4, depth=2)
+    pl = player.Player("red", 4)
     # pl.turn("red", ("PLACE", 1, 3))
     pl.turn("blue", ("PLACE", 2, 0))
     pl.turn("blue", ("PLACE", 2, 1))
@@ -266,7 +266,7 @@ def test_defensive():
 
 
 def test_defensive3():
-    pl = player.Player("red", 4, depth=2)
+    pl = player.Player("red", 4)
     # pl.turn("red", ("PLACE", 1, 3))
     pl.turn("blue", ("PLACE", 3, 0))
     pl.turn("blue", ("PLACE", 3, 1))
@@ -283,7 +283,7 @@ def test_defensive3():
 
 
 def test_defensive2():
-    pl = player.Player("red", 4, depth=2)
+    pl = player.Player("red", 4)
     # pl.turn("red", ("PLACE", 1, 3))
     pl.turn("blue", ("PLACE", 2, 0))
     pl.turn("blue", ("PLACE", 2, 1))
@@ -306,7 +306,7 @@ def test_defensive2():
 
 
 def test_evaluate():
-    pl = player.Player("red", 4, depth=1)
+    pl = player.Player("red", 4)
     pl.turn("blue", ("PLACE", 2, 0))
     pl.turn("blue", ("PLACE", 2, 1))
     pl.turn("blue", ("PLACE", 2, 2))
@@ -324,7 +324,7 @@ def test_evaluate():
 
 
 def test_distance_to_win_2():
-    pl = player.Player("red", 4, depth=1)
+    pl = player.Player("red", 4)
     path1, cost = pl.board.a_star(
         "blue", pl.board.piece(0, 0), pl.board.piece(2, 2))
 

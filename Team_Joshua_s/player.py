@@ -29,7 +29,7 @@ class Player:
         14: 1,
         15: 1}
 
-    def __init__(self, player: str, n: int, depth: int = 3):
+    def __init__(self, player: str, n: int):
         """
         Called once at the beginning of a game to initialise this player.
         Set up an internal representation of the game state.
