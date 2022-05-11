@@ -141,6 +141,8 @@ def distance_score(brd: board.Board, our: str, player: str) -> float:
 
 def evaluate(brd: board.Board, our: str, player: str) -> float:
     distance = distance_score(brd, our, player)
+    if distance == 100000000 or distance == - 100000000:
+        return distance
     triangle = triangles(brd, our) - \
         triangles(brd, utils.next(our))
     double_pat = double_bridge(brd, our) - \

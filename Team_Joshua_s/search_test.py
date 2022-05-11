@@ -84,12 +84,12 @@ def testa_star():
 
     print(s)
 
+
 def test_steal():
     pl = player.Player("red", 15)
     pl.turn("red", ("PLACE", 1, 1))
     pl.turn("blue", ("STEAL", ))
     print(pl.board)
-
 
 
 def testplayer2():
