@@ -1,3 +1,10 @@
+"""
+COMP30024 Artificial Intelligence, Semester 1, 2022
+Project Part B
+
+This module contains some helper functions for printing actions and boards.
+Feel free to use and/or modify them to help you develop your program.
+"""
 from collections import namedtuple
 
 

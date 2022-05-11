@@ -1,3 +1,12 @@
+"""
+COMP30024 Artificial Intelligence, Semester 1, 2022
+Project Part B
+
+Author: Joshua Carpeggiani
+Student Number: 999380
+
+Partner: Joshua Tan
+"""
 # Note:
 # The class defined within this module with the name 'Player' is the
 # class we will test when assessing your project.

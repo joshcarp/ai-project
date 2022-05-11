@@ -1,8 +1,13 @@
+"""
+board.py contains the Board class to process changes and keep track of board
+state as well as searching.
+"""
 import math
 from copy import copy
 from typing import List
 
 from Team_Joshua_s import util, utils, hexagon
+
 
 class Board:
     """

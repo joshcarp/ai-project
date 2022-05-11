@@ -1,3 +1,7 @@
+"""
+randplayer.py contains code for a random Player class to play a game of cachex
+by randomly choosing available moves.
+"""
 import random
 
 from Team_Joshua_s import board, utils

@@ -1,3 +1,7 @@
+"""
+evaluation.py contains functions dedicated to calculating the
+evaluation of a particular board state
+"""
 from Team_Joshua_s import utils, board, hexagon
 
 

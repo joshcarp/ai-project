@@ -1,3 +1,6 @@
+"""
+cachex_test.py contains test code for all of our code.
+"""
 import time
 
 from Team_Joshua_s import evaluation, utils, hexagon, board, player, randplayer

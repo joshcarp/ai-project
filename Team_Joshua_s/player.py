@@ -1,3 +1,6 @@
+"""
+player.py contains code for the Player class to play a game of cachex.
+"""
 import math
 
 import Team_Joshua_s.evaluation as evaluation

@@ -1,3 +1,7 @@
+"""
+hexagon.py contains the hexagon class and helper functions to make
+dealing with hexagonal grids easier.
+"""
 import math
 import sys
 from typing import Union
