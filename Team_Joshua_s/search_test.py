@@ -89,8 +89,8 @@ def testplayer2():
     # pr = cProfile.Profile()
     # pr.enable()
     print("hello")
-    pl = player.Player("red", 4)
-    pl2 = player.Player("blue", 4, random=True)
+    pl = player.Player("red", 15)
+    pl2 = player.Player("blue", 15, random=True)
 
     for i in range(6):
         if i == 3:
@@ -249,6 +249,23 @@ def test_defensive():
 
     # pl.turn("red", ("PLACE", 2, 1))
     # print(player.evaluate(pl.board, "red", ""))
+    act = pl.action()
+    pl.turn("red", act)
+    print(pl.board)
+
+
+def test_defensive3():
+    pl = player.Player("red", 4, depth=2)
+    # pl.turn("red", ("PLACE", 1, 3))
+    pl.turn("blue", ("PLACE", 3, 0))
+    pl.turn("blue", ("PLACE", 3, 1))
+    # pl.turn("blue", ("PLACE", 3, 2))
+    # pl.turn("red", ("PLACE", 2, 3))
+    act = pl.action()
+    pl.turn("red", act)
+    print(pl.board)
+
+    pl.turn("blue", ("PLACE", 3, 3))
     act = pl.action()
     pl.turn("red", act)
     print(pl.board)

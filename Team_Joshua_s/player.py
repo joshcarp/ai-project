@@ -86,13 +86,12 @@ def action(
     if depth == 0 or utility == 100000000 or utility == -100000000:
         return utility, None
     max_score, min_score = (None, None), (None, None)
-    # pp = brd.filter_pieces(lambda x: x.color == "")
-    pp, err = evaluation.distance_to_win(brd, our)
+    pp, err = evaluation.distance_to_win(brd, player)
     pp = [e for e in pp if e.color == ""]
-    if len(pp) == 0:
-        pp = brd.filter_pieces(lambda x: x.color == "")
+    pp2, err = evaluation.distance_to_win(brd, utils.next(player))
+    pp.extend([e for e in pp2 if e.color == ""])
     for pieces in pp:
-        if pieces.color != "":
+        if pieces.coords == (0, 2):
             a = 1
         act = utils.Action(player, "PLACE", *pieces.coords)
         newboard = brd.action(act)

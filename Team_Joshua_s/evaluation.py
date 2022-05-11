@@ -121,7 +121,7 @@ def distance_to_win(brd: board.Board,
 def distance_score(brd: board.Board, our: str, player: str) -> float:
     score = 0
     foo, distance = distance_to_win(brd, our)
-    if distance == 1 and our == player:
+    if distance == 1:
         return 10000000
     if distance == 0:
         return 100000000
@@ -129,7 +129,7 @@ def distance_score(brd: board.Board, our: str, player: str) -> float:
         score = 1 / distance
 
     foo, distance = distance_to_win(brd, utils.next(our))
-    if distance == 1 and our != player:
+    if distance == 1:
         return - 10000000
     if distance == 0:
         return - 100000000
