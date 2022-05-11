@@ -1,6 +1,6 @@
 import time
 
-from Team_Joshua_s import evaluation, utils, hexagon, board, player
+from Team_Joshua_s import evaluation, utils, hexagon, board, player, randplayer
 
 
 def testneighbours():
@@ -98,7 +98,7 @@ def testplayer2():
     n = 15
     print("hello")
     pl = player.Player("red", n)
-    pl2 = player.Player("blue", n, random=True)
+    pl2 = randplayer.Player("blue", n)
 
     for i in range(7):
         if i == 3:

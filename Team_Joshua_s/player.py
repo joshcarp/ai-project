@@ -5,10 +5,12 @@ from Team_Joshua_s import utils, board
 
 
 class Player:
+    """
+    Player is Team_Joshua_s player
+    """
     player: str = ""
     brd: board.Board = None
     depth: int
-    random: bool
     depth_map = {
         3: 3,
         4: 3,
@@ -24,7 +26,7 @@ class Player:
         14: 1,
         15: 1}
 
-    def __init__(self, player: str, n: int, depth: int = 3, random=False):
+    def __init__(self, player: str, n: int, depth: int = 3):
         """
         Called once at the beginning of a game to initialise this player.
         Set up an internal representation of the game state.
@@ -36,7 +38,6 @@ class Player:
         self.board = board.Board(n)
         self.player = player
         self.depth = self.depth_map[n]
-        self.random = random
         self.cache = {}
 
     def action(self):
@@ -44,18 +45,18 @@ class Player:
        Called at the beginning of your turn. Based on the current state
        of the game, select an action to play.
        """
-        if self.random:
-            valid_moves = self.board.filter_pieces(lambda x: x.color == "")
-            return (
-                "PLACE",
-                *valid_moves[1].coords)
-        act = action(self.player, self.player, self.board, self.depth,
-                     -math.inf, math.inf)
-        if act[1] is None:
-            raise Exception
-        if self.board.piece(act[1].r, act[1].q).color != "":
-            raise Exception
-        return ("PLACE", act[1].r, act[1].q)
+        try:
+            act = action(self.player, self.player, self.board, self.depth,
+                         -math.inf, math.inf)
+            if act[1] is None:
+                raise Exception
+            if self.board.piece(act[1].r, act[1].q).color != "":
+                raise Exception
+            return ("PLACE", act[1].r, act[1].q)
+        except BaseException:
+            simple = evaluation.distance_to_win(self.board, self.player)
+            blank = [x for x in simple[0] if x.color == ""]
+            return ("PLACE", *blank[0].coords)
 
     def turn(self, player, action):
         """
