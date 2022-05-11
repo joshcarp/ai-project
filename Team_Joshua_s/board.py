@@ -165,7 +165,7 @@ class Board:
         while current.coords != end.coords:
             nodes_explored += 1
             opened.sort(
-                key=lambda x:  x.distance(end) + x.total_cost,
+                key=lambda x: x.distance(end) + x.total_cost,
                 reverse=True
             )
             if len(opened) == 0:
