@@ -427,6 +427,7 @@ def testplayer3():
     pl.turn("red", ("PLACE", 11, 11))
 
     act = pl.action()
+    print(act)
 
     print(pl.board)
 
@@ -446,13 +447,14 @@ def testplayer3():
     #     pl.turn(pl2.player, act)
     #     pl2.turn(pl2.player, act)
 
+
 def test_capture():
     a = player.Player("blue", 5)
 
     a.turn("red", ("PLACE", 2, 0))
 
     a.turn("red", ("PLACE", 2, 1))
-    a.turn("red", ("PLACE",3, 1))
+    a.turn("red", ("PLACE", 3, 1))
     a.turn("blue", ("PLACE", 3, 0))
     a.turn("blue", ("PLACE", 1, 2))
     a.turn("blue", ("PLACE", 1, 3))
@@ -464,29 +466,21 @@ def test_capture():
     a.turn("blue", ("PLACE", 1, 1))
     print(a.board)
 
+
 def test_capture2():
-        a = player.Player("blue", 5)
+    a = player.Player("blue", 5)
 
-        a.turn("red", ("PLACE", 2, 0))
+    a.turn("red", ("PLACE", 2, 0))
 
-        a.turn("red", ("PLACE", 2, 1))
-        a.turn("red", ("PLACE", 3, 1))
-        a.turn("blue", ("PLACE", 3, 0))
-        a.turn("blue", ("PLACE", 1, 2))
-        a.turn("blue", ("PLACE", 1, 3))
-        a.turn("blue", ("PLACE", 1, 4))
+    a.turn("red", ("PLACE", 2, 1))
+    a.turn("red", ("PLACE", 3, 1))
+    a.turn("blue", ("PLACE", 3, 0))
+    a.turn("blue", ("PLACE", 1, 2))
+    a.turn("blue", ("PLACE", 1, 3))
+    a.turn("blue", ("PLACE", 1, 4))
 
-        a.turn("red", ("PLACE", 0, 2))
-        a.turn("red", ("PLACE", 0, 3))
-        a.turn("red", ("PLACE", 0, 4))
-        a.turn("blue", ("PLACE", 1, 1))
-        print(a.board)
-
-
-
-
-
-
-
-
-
+    a.turn("red", ("PLACE", 0, 2))
+    a.turn("red", ("PLACE", 0, 3))
+    a.turn("red", ("PLACE", 0, 4))
+    a.turn("blue", ("PLACE", 1, 1))
+    print(a.board)
