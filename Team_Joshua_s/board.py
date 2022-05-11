@@ -1,9 +1,8 @@
 import math
 from copy import copy
-from typing import List, Callable
+from typing import List
 
 from Team_Joshua_s import util, utils, hexagon
-
 
 class Board:
     """
@@ -14,8 +13,6 @@ class Board:
     n: int
     last_action: utils.Action
     distances_cache: {}
-    distances_cache3: {}
-    colors = ["red", "blue"]
 
     def __init__(self, n, copy=False):
         if copy:
@@ -39,9 +36,12 @@ class Board:
                 d[e.coords] = f"{e.color[0]}"
         return util.board_string(self.n, d)
 
-    def filter_pieces(self,
-                      filter: Callable[[hexagon.Hexagon],
-                                       bool] = lambda x: True):
+    def filter_pieces(self, filter=lambda x: True):
+        """
+        filter_pieces filters the pieces based on a filter.
+        :param filter:
+        :return: a list of pieces that adhere to filter.
+        """
         pieces = []
         for i in range(self.n):
             for j in range(self.n):
