@@ -2,16 +2,17 @@ import math
 import random
 
 import Team_Joshua_s.search as search
+import Team_Joshua_s.evaluation as evaluation
+from Team_Joshua_s import utils
 
 
 class Player:
     player: str = ""
     board: search.Board = None
-    plays: search.List[search.Action] = []
-    depth: int = 4
-    random: bool = False
+    depth: int
+    random: bool
 
-    def __init__(self, player: str, n: int, depth: int = None, random=False):
+    def __init__(self, player: str, n: int, depth: int = 3, random=False):
         """
         Called once at the beginning of a game to initialise this player.
         Set up an internal representation of the game state.
@@ -25,6 +26,7 @@ class Player:
         if depth is not None:
             self.depth = depth
         self.random = random
+        self.cache = {}
 
     def action(self):
         """
@@ -55,26 +57,32 @@ class Player:
         """
         if isinstance(action, str):
             action = (action,)
-        if not isinstance(action, search.Action):
-            action = search.Action(player, *action)
+        if not isinstance(action, utils.Action):
+            action = utils.Action(player, *action)
         self.board = self.board.action(action)
 
 
-def action(our: str, player: str, board: search.Board, depth: int, a: float,
-           b: float):
+def action(
+        our: str,
+        player: str,
+        board: search.Board,
+        depth: int,
+        a: float,
+        b: float):
     if depth == 0:
         utility = evaluate(board, our, player)
         return utility, None
     max_score, min_score = (-math.inf, None), (math.inf, None)
     for pieces in board.filter_pieces(lambda x: x.color == ""):
-        act = search.Action(player, "PLACE", *pieces.coords)
+        act = utils.Action(player, "PLACE", *pieces.coords)
         newboard = board.action(act)
         terminal = action(our,
-                          search.next_player(player),
+                          utils.next(player),
                           newboard,
                           depth - 1,
                           a,
                           b)
+
         terminal = (terminal[0], act)
         if our == player:
             if max_score[0] == -math.inf:
@@ -95,7 +103,7 @@ def action(our: str, player: str, board: search.Board, depth: int, a: float,
 
 def distance_score(board: search.Board, our: str, player: str) -> float:
     score = 0
-    foo, distance = board.distance_to_win(our)
+    foo, distance = evaluation.distance_to_win(board, our)
     if distance == 1 and our == player:
         return math.inf
     if distance == 0:
@@ -103,7 +111,7 @@ def distance_score(board: search.Board, our: str, player: str) -> float:
     else:
         score = 1 / distance
 
-    foo, distance = board.distance_to_win(search.next_player(our))
+    foo, distance = evaluation.distance_to_win(board, utils.next(our))
     if distance == 1 and our != player:
         return - math.inf
     if distance == 0:
@@ -116,10 +124,12 @@ def distance_score(board: search.Board, our: str, player: str) -> float:
 
 def evaluate(board: search.Board, our: str, player: str) -> float:
     distance = distance_score(board, our, player)
-    # triangles = board.triangles(our) - board.triangles(search.next_player(our))
-    # diamonds = board.diamonds(our) - board.diamonds(search.next_player(our))
-    # double_path = board.double_bridge(our) - board.double_bridge(
-    #     search.next_player(our))
-    # captures = board.capturable(our) - board.capturable(
-    #     search.next_player(our))
-    return distance # + triangles + diamonds + double_path + captures
+    # triangles = evaluation.triangles(board, our) - \
+    #     evaluation.triangles(board, utils.next(our))
+    # diamonds = evaluation.diamonds(board, our) - \
+    #     evaluation.diamonds(board, utils.next(our))
+    # double_path = evaluation.double_bridge(board, our) - \
+    #     evaluation.double_bridge(board, utils.next(our))
+    # captures = evaluation.capturable(board, our) - \
+    #     evaluation.capturable(board, utils.next(our))
+    return distance  # + triangles + diamonds + double_path + captures
