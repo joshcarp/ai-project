@@ -58,14 +58,17 @@ def testplayer():
 
 def testfoo():
     print("hello")
-    pl = player.Player("red", 15, depth=1)
+    pl = player.Player("red", 4, depth=1)
+    pl.turn("red", ("PLACE", 0, 1))
+    pl.turn("red", ("PLACE", 1, 1))
+    pl.turn("red", ("PLACE", 2, 1))
     act = pl.action()
     pl.turn(pl.player, act)
     print(pl.board)
 
 
 def testa_star():
-    pl = player.Player("red", 15, depth=1)
+    pl = player.Player("red", 15)
     start_line, end_line = utils.start_end_line(pl.board, pl.player)
     start = hexagon.Hexagon(-1, -1)
     start.custom_neighbours = start_line
@@ -86,25 +89,28 @@ def testplayer2():
     # pr = cProfile.Profile()
     # pr.enable()
     print("hello")
-    pl = player.Player("red", 15, depth=2)
-    pl2 = player.Player("blue", 15, random=True)
+    pl = player.Player("red", 4)
+    pl2 = player.Player("blue", 4, random=True)
 
-    for i in range(1):
+    for i in range(6):
         if i == 3:
             print()
         start_time = time.time()
         act = pl.action()
-        print(act)
+        print(pl.board)
+        print(pl.player, act)
         pl.turn(pl.player, act)
         pl2.turn(pl2.player, act)
         print(time.time() - start_time)
         act = pl2.action()
+        print(pl.board)
+        print(pl2.player, act)
         pl.turn(pl2.player, act)
         pl2.turn(pl2.player, act)
 
         # pl2.turn(pl.player, act)
 
-        print(pl.board)
+
 # print("red: ", len(pl.board.filter_pieces(lambda x: x.color == "red")))
 # print("blue: ",
 #       len(pl.board.filter_pieces(lambda x: x.color == "blue")))
@@ -130,13 +136,13 @@ def testplayer2():
 #     break
 # print(i)
 
-    # pr.disable()
-    # s = io.StringIO()
-    # # sortby = SortKey.CUMULATIVE
-    # ps = pstats.Stats(pr, stream=s)
-    # # ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
-    # ps.print_stats()
-    # print(s.getvalue())
+# pr.disable()
+# s = io.StringIO()
+# # sortby = SortKey.CUMULATIVE
+# ps = pstats.Stats(pr, stream=s)
+# # ps = pstats.Stats(pr, stream=s).sort_stats(sortby)
+# ps.print_stats()
+# print(s.getvalue())
 
 
 def testtriangle():
@@ -232,14 +238,14 @@ def test_defensive():
     pl.turn("blue", ("PLACE", 2, 1))
     pl.turn("red", ("PLACE", 1, 2))
     print(pl.board)
-    print(player.evaluate(pl.board, "red", ""))
+    print(evaluation.evaluate(pl.board, "red", ""))
     b1 = pl.board.action(utils.Action("red", "PLACE", 3, 3))
     print(b1)
-    print("b1", player.evaluate(b1, "red", ""))
+    print("b1", evaluation.evaluate(b1, "red", ""))
 
     b2 = pl.board.action(utils.Action("red", "PLACE", 2, 2))
     print(b2)
-    print("b2", player.evaluate(b2, "red", "blue"))
+    print("b2", evaluation.evaluate(b2, "red", "blue"))
 
     # pl.turn("red", ("PLACE", 2, 1))
     # print(player.evaluate(pl.board, "red", ""))
@@ -248,22 +254,45 @@ def test_defensive():
     print(pl.board)
 
 
+def test_defensive2():
+    pl = player.Player("red", 4, depth=2)
+    # pl.turn("red", ("PLACE", 1, 3))
+    pl.turn("blue", ("PLACE", 2, 0))
+    pl.turn("blue", ("PLACE", 2, 1))
+    pl.turn("red", ("PLACE", 1, 2))
+    pl.turn("red", ("PLACE", 2, 2))
+    pl.turn("red", ("PLACE", 0, 2))
+    print(pl.board)
+    print(evaluation.distance_to_win(pl.board, "red"))
+    print(evaluation.evaluate(pl.board, "red", "red"))
+    print(pl.action())
+    # pl.turn("red", ("PLACE", 3, 1))
+    # print(pl.board)
+    # print(evaluation.distance_to_win(pl.board, "red"))
+    # print(evaluation.evaluate(pl.board, "red", "red"))
+
+    # act = pl.action()
+    # pl.turn("red", act)
+    # print(act)
+    # print(pl.board)
+
+
 def test_evaluate():
     pl = player.Player("red", 4, depth=1)
     pl.turn("blue", ("PLACE", 2, 0))
     pl.turn("blue", ("PLACE", 2, 1))
     pl.turn("blue", ("PLACE", 2, 2))
     print(pl.board)
-    print(player.evaluate(pl.board, "red", ""))
+    print(evaluation.evaluate(pl.board, "red", ""))
     pl.turn("red", ("PLACE", 1, 3))
     print(pl.board)
-    print(player.evaluate(pl.board, "red", ""))
+    print(evaluation.evaluate(pl.board, "red", ""))
     pl.turn("red", ("PLACE", 3, 3))
     print(pl.board)
-    print(player.evaluate(pl.board, "red", ""))
+    print(evaluation.evaluate(pl.board, "red", ""))
     pl.turn("red", ("PLACE", 2, 3))
     print(pl.board)
-    print(player.evaluate(pl.board, "red", ""))
+    print(evaluation.evaluate(pl.board, "red", ""))
 
 
 def test_distance_to_win_2():
@@ -331,7 +360,17 @@ def test_new_distance():
     brd = brd.action(utils.Action("blue", "PLACE", 1, 0))
     brd = brd.action(utils.Action("blue", "PLACE", 1, 0))
     brd = brd.action(utils.Action("blue", "PLACE", 1, 0))
-
+    print(brd)
     a = evaluation.distance_to_win(brd, "red")
     print(brd)
     print(a)
+
+
+def test_distance_1():
+    brd = board.Board(3)
+    brd = brd.action(utils.Action("red", "PLACE", 0, 1))
+    brd = brd.action(utils.Action("red", "PLACE", 1, 1))
+    # brd = brd.action(utils.Action("red", "PLACE", 2, 1))
+    dist = evaluation.distance_to_win(brd, "red")
+    print(brd)
+    print(dist)

@@ -92,6 +92,9 @@ def distance_to_win(brd: board.Board,
         if last_action is not None and (
                 last_action.r,
                 last_action.q) not in last_eval[0]:
+            last_eval = ([brd.piece(*x.coords)
+                         for x in last_eval[0]], last_eval[1])
+            brd.distances_cache[color] = last_eval
             return last_eval
 
     start_line, end_line = utils.start_end_line(brd, color)
@@ -111,6 +114,39 @@ def distance_to_win(brd: board.Board,
         elem.custom_neighbours = [end]
     res = brd.a_star(color, start, end)
     res = (res[0][1:-1], res[1])
-
     brd.distances_cache[color] = res
     return res
+
+
+def distance_score(brd: board.Board, our: str, player: str) -> float:
+    score = 0
+    foo, distance = distance_to_win(brd, our)
+    if distance == 1 and our == player:
+        return 10000000
+    if distance == 0:
+        return 100000000
+    else:
+        score = 1 / distance
+
+    foo, distance = distance_to_win(brd, utils.next(our))
+    if distance == 1 and our != player:
+        return - 10000000
+    if distance == 0:
+        return - 100000000
+    else:
+        score -= 1 / distance
+
+    return score
+
+
+def evaluate(brd: board.Board, our: str, player: str) -> float:
+    distance = distance_score(brd, our, player)
+    # triangles = evaluation.triangles(board, our) - \
+    #     evaluation.triangles(board, utils.next(our))
+    # diamonds = evaluation.diamonds(board, our) - \
+    #     evaluation.diamonds(board, utils.next(our))
+    # double_path = evaluation.double_bridge(board, our) - \
+    #     evaluation.double_bridge(board, utils.next(our))
+    # captures = evaluation.capturable(board, our) - \
+    #     evaluation.capturable(board, utils.next(our))
+    return distance  # + triangles + diamonds + double_path + captures

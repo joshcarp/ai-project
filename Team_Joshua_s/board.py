@@ -13,7 +13,7 @@ class Board:
     mutations: List[List[List[hexagon.Hexagon]]]
     n: int
     last_action: utils.Action
-    distances_cache: {} = {"red": None, "blue": None}
+    distances_cache: {}
     distances_cache3: {}
     colors = ["red", "blue"]
 
@@ -23,6 +23,7 @@ class Board:
         self.last_action = None
         self.n = n
         self.mutations = []
+        self.distances_cache = {"red": None, "blue": None}
         if copy:
             return
         for i in range(n):
@@ -194,7 +195,9 @@ class Board:
         path.reverse()
         if start is not None and path[0] != start:
             raise Exception
-        self.filter_pieces(lambda x: x.reset_search())
+        if cost == math.inf:
+            return path, cost
+        self.filter_pieces(lambda x: x.end_search())
         if cost == math.inf:
             return path, cost
         return path, round(cost)
@@ -204,6 +207,8 @@ class Board:
         newboard.last_action = self.last_action
         newboard.mutations = []
         newboard.n = self.n
+        newboard.distances_cache = {
+            k: v for (k, v) in self.distances_cache.items()}
         for i in range(self.n):
             newboard.mutations.append([])
             for j in range(self.n):

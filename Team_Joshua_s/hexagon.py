@@ -41,6 +41,10 @@ class Hexagon:
         self.previous = None
         self.total_cost = math.inf
 
+    def end_search(self):
+        self.reset_search()
+        self.custom_neighbours = None
+
     def __repr__(self):
         return f"({self.coords[0]},{self.coords[1]})"
 

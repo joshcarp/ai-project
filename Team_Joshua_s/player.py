@@ -1,5 +1,4 @@
 import math
-import random
 
 import Team_Joshua_s.evaluation as evaluation
 from Team_Joshua_s import utils, board
@@ -10,6 +9,20 @@ class Player:
     brd: board.Board = None
     depth: int
     random: bool
+    depth_map = {
+        3: 3,
+        4: 3,
+        5: 3,
+        6: 3,
+        7: 3,
+        8: 2,
+        9: 2,
+        10: 2,
+        11: 2,
+        12: 2,
+        13: 2,
+        14: 2,
+        15: 1}
 
     def __init__(self, player: str, n: int, depth: int = 3, random=False):
         """
@@ -22,8 +35,7 @@ class Player:
         """
         self.board = board.Board(n)
         self.player = player
-        if depth is not None:
-            self.depth = depth
+        self.depth = self.depth_map[n]
         self.random = random
         self.cache = {}
 
@@ -36,9 +48,11 @@ class Player:
             valid_moves = self.board.filter_pieces(lambda x: x.color == "")
             return (
                 "PLACE",
-                *valid_moves[random.randint(0, len(valid_moves) - 1)].coords)
+                *valid_moves[1].coords)
         act = action(self.player, self.player, self.board, self.depth,
                      -math.inf, math.inf)
+        if act[1] is None:
+            raise Exception
         if self.board.piece(act[1].r, act[1].q).color != "":
             raise Exception
         return ("PLACE", act[1].r, act[1].q)
@@ -68,11 +82,18 @@ def action(
         depth: int,
         a: float,
         b: float):
-    if depth == 0:
-        utility = evaluate(brd, our, player)
+    utility = evaluation.evaluate(brd, our, player)
+    if depth == 0 or utility == 100000000 or utility == -100000000:
         return utility, None
-    max_score, min_score = (-math.inf, None), (math.inf, None)
-    for pieces in brd.filter_pieces(lambda x: x.color == ""):
+    max_score, min_score = (None, None), (None, None)
+    # pp = brd.filter_pieces(lambda x: x.color == "")
+    pp, err = evaluation.distance_to_win(brd, our)
+    pp = [e for e in pp if e.color == ""]
+    if len(pp) == 0:
+        pp = brd.filter_pieces(lambda x: x.color == "")
+    for pieces in pp:
+        if pieces.color != "":
+            a = 1
         act = utils.Action(player, "PLACE", *pieces.coords)
         newboard = brd.action(act)
         terminal = action(our,
@@ -81,15 +102,14 @@ def action(
                           depth - 1,
                           a,
                           b)
-
         terminal = (terminal[0], act)
         if our == player:
-            if max_score[0] == -math.inf:
+            if max_score[0] is None:
                 max_score = terminal
             max_score = max(max_score, terminal, key=lambda x: x[0])
             a = max(a, terminal[0])
         else:
-            if min_score == math.inf:
+            if min_score[0] is None:
                 min_score = terminal
             min_score = min(min_score, terminal, key=lambda x: x[0])
             b = min(b, terminal[0])
@@ -98,37 +118,3 @@ def action(
     if our == player:
         return max_score
     return min_score
-
-
-def distance_score(brd: board.Board, our: str, player: str) -> float:
-    score = 0
-    foo, distance = evaluation.distance_to_win(brd, our)
-    if distance == 1 and our == player:
-        return math.inf
-    if distance == 0:
-        score = math.inf
-    else:
-        score = 1 / distance
-
-    foo, distance = evaluation.distance_to_win(brd, utils.next(our))
-    if distance == 1 and our != player:
-        return - math.inf
-    if distance == 0:
-        score -= math.inf
-    else:
-        score -= 1 / distance
-
-    return score
-
-
-def evaluate(brd: board.Board, our: str, player: str) -> float:
-    distance = distance_score(brd, our, player)
-    # triangles = evaluation.triangles(board, our) - \
-    #     evaluation.triangles(board, utils.next(our))
-    # diamonds = evaluation.diamonds(board, our) - \
-    #     evaluation.diamonds(board, utils.next(our))
-    # double_path = evaluation.double_bridge(board, our) - \
-    #     evaluation.double_bridge(board, utils.next(our))
-    # captures = evaluation.capturable(board, our) - \
-    #     evaluation.capturable(board, utils.next(our))
-    return distance  # + triangles + diamonds + double_path + captures
