@@ -112,8 +112,6 @@ def action(
     # This iterates only over the paths that are in the minimum distances
     # for either side and doesn't expand anything else
     for pieces in path:
-        if pieces.coords == (0, 2):
-            a = 1
         act = utils.Action(player, "PLACE", *pieces.coords)
         newboard = brd.action(act)
         evaluate = action(our,
